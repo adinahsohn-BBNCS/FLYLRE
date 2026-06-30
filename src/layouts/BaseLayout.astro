@@ -1,0 +1,51 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  current?: "home" | "explore" | "adventure";
+}
+
+const { title, description = "Fly LRE — Lake Riverside Estates Airport (54CL). Adventure Begins at the End of the Runway.", current } = Astro.props;
+
+const fullTitle = title === "Fly LRE" ? title : `${title} · Fly LRE`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{fullTitle}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-inner">
+        <a class="logo" href="/">Fly <span>LRE</span></a>
+        <nav aria-label="Main">
+          <ul>
+            <li><a href="/" aria-current={current === "home" ? "page" : undefined}>Home</a></li>
+            <li><a href="/explore-the-airport/" aria-current={current === "explore" ? "page" : undefined}>Explore the Airport</a></li>
+            <li><a href="/plan-your-next-adventure/" aria-current={current === "adventure" ? "page" : undefined}>Plan Your Next Adventure</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer class="site-footer">
+      <p class="footer-brand">Fly LRE</p>
+      <p class="footer-tagline">Adventure Begins at the End of the Runway.</p>
+      <p class="footer-visit">Visitors welcome with prior permission from residents.</p>
+      <p><a href="mailto:info@flylre.com">info@flylre.com</a></p>
+    </footer>
+  </body>
+</html>
+
+<style is:global>
+  @import "../styles/global.css";
+</style>

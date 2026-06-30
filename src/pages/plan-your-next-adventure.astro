@@ -1,0 +1,134 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+const flyouts = [
+  {
+    name: "French Valley (F70)",
+    meta: "~9 min · ~17 nm",
+    text: "The default first hop — 100LL, FBO, and Temecula wine country on the ground. Coffee, fuel, and back before the afternoon build-up.",
+  },
+  {
+    name: "Ramona (RNM)",
+    meta: "~25–30 min",
+    text: "North into San Diego backcountry hills — different terrain and a nice change of scenery. Watch terrain and traffic; check services before you go.",
+  },
+  {
+    name: "Carlsbad (CRQ) or Montgomery-Gibbs (MYF)",
+    meta: "~35–45 min",
+    text: "Coastward — Class airspace and busy traffic, but a classic SoCal fly-to-the-ocean day when you're current and sharp.",
+  },
+  {
+    name: "Jacqueline Cochran — Thermal (TRM)",
+    meta: "~20–25 min",
+    text: "Desert side — Palm Springs area without the busiest Class D. Good for a desert run; mind density altitude in summer.",
+  },
+  {
+    name: "Big Bear (L35)",
+    meta: "~45–60 min",
+    text: "Mountain flying when you're trained and current — elevation, turbulence, and winter weather. Rewarding when conditions cooperate.",
+  },
+  {
+    name: "Julian (L78) and backcountry strips",
+    meta: "Varies",
+    text: "Mountain and backcountry flavor — only if you know the strip and conditions. Not a casual first pick.",
+  },
+  {
+    name: "Borrego Valley (L08)",
+    meta: "~30–40 min",
+    text: "East over desert and park country — wide views and quieter airspace. Summer heat and wind matter.",
+  },
+  {
+    name: "Warner Springs (CL35) and local ridge running",
+    meta: "Short hop",
+    text: "Stay local — explore the valley and ridges on a clear morning when pattern work feels too small for the sky.",
+  },
+  {
+    name: "Palm Springs area (TRM, UDD, etc.)",
+    meta: "~25–40 min",
+    text: "Different climate and scenery — a popular half-day when the coast is gray and the desert is clear.",
+  },
+];
+
+const sampleDays = [
+  {
+    title: "Coffee hop",
+    text: "54CL → French Valley → coffee and fuel → home for lunch.",
+  },
+  {
+    title: "Desert run",
+    text: "Early departure → Thermal or Borrego → back before the heat peaks.",
+  },
+  {
+    title: "Coast day",
+    text: "Careful routing toward North County when you're current on airspace — lunch on the coast, home via familiar corridors.",
+  },
+  {
+    title: "Local joyride",
+    text: "No fixed destination — valley, ridge lines, and VFR clarity when the rest of SoCal is IFR.",
+  },
+];
+---
+
+<BaseLayout
+  title="Plan Your Next Adventure"
+  description="Suggested fly-outs from 54CL — local destinations for pilots at Fly LRE and Lake Riverside Estates."
+  current="adventure"
+>
+  <div class="page page-wide">
+    <header class="hero hero-compact">
+      <p class="hero-eyebrow">Fly-outs from 54CL</p>
+      <h1>Plan Your Next Adventure</h1>
+      <p class="hero-tagline">Adventure Begins at the End of the Runway.</p>
+    </header>
+
+    <section>
+      <p>
+        Rollout at LRE is just the start. From here you're in <strong>Class G</strong>,
+        <strong>~3,400 feet</strong>, and minutes from fuel, wine country, mountains, and desert —
+        without fighting coastal marine layer.
+      </p>
+      <p>
+        Below are suggested hops pilots from the community enjoy — whether you live here or you're
+        visiting with a resident's invitation. Distances and times are approximate; you know your
+        airplane, weather, and personal minimums.
+      </p>
+    </section>
+
+    <p class="note">
+      Always check NOTAMs, TFRs, and runway/fuel availability before you go. There is no fuel at
+      54CL — plan your first stop if needed. These are ideas, not flight plans.
+    </p>
+
+    <section>
+      <h2>Suggested Fly-Outs</h2>
+      <div class="flyout-list">
+        {flyouts.map((dest) => (
+          <article class="flyout">
+            <div class="flyout-header">
+              <h3>{dest.name}</h3>
+              <span class="flyout-meta">{dest.meta}</span>
+            </div>
+            <p>{dest.text}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section>
+      <h2>Morning from LRE</h2>
+      {sampleDays.map((day) => (
+        <div>
+          <h3>{day.title}</h3>
+          <p>{day.text}</p>
+        </div>
+      ))}
+    </section>
+
+    <div class="cta-box">
+      <p>Got a favorite hop from LRE we should list?</p>
+      <p>
+        Email <a href="mailto:info@flylre.com">info@flylre.com</a> — community suggestions welcome.
+      </p>
+    </div>
+  </div>
+</BaseLayout>
