@@ -1,0 +1,139 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+  title="Admin"
+  description="Manage pilot profiles, community events, and fly-outs for Fly LRE."
+  robots="noindex, nofollow"
+>
+  <div class="page page-wide">
+    <header class="hero hero-compact">
+      <p class="hero-eyebrow">Fly LRE</p>
+      <h1>Admin</h1>
+      <p class="hero-sub">Sign in to review submissions and manage what appears on the site.</p>
+    </header>
+
+    <section id="admin-login">
+      <h2>Sign in</h2>
+      <p>Use the admin account you created in Supabase.</p>
+      <p id="admin-login-error" class="form-error" hidden></p>
+      <form id="admin-login-form" class="pilot-form admin-login-form">
+        <div class="form-field">
+          <label for="admin-email">Email</label>
+          <input id="admin-email" name="email" type="email" required autocomplete="username" />
+        </div>
+        <div class="form-field">
+          <label for="admin-password">Password</label>
+          <input
+            id="admin-password"
+            name="password"
+            type="password"
+            required
+            autocomplete="current-password"
+          />
+        </div>
+        <button type="submit" class="form-submit">Sign in</button>
+      </form>
+    </section>
+
+    <section id="admin-dashboard" hidden>
+      <div class="admin-review-bar">
+        <h2>Dashboard</h2>
+        <button id="admin-logout" type="button" class="admin-logout">Sign out</button>
+      </div>
+      <p id="admin-review-message" class="form-note" hidden></p>
+
+      <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+        <button
+          type="button"
+          class="admin-tab"
+          role="tab"
+          id="admin-tab-pilots"
+          aria-controls="admin-panel-pilots"
+          aria-selected="true"
+          data-tab="pilots"
+        >
+          Pilots
+        </button>
+        <button
+          type="button"
+          class="admin-tab"
+          role="tab"
+          id="admin-tab-events"
+          aria-controls="admin-panel-events"
+          aria-selected="false"
+          data-tab="events"
+        >
+          Events
+        </button>
+        <button
+          type="button"
+          class="admin-tab"
+          role="tab"
+          id="admin-tab-flyouts"
+          aria-controls="admin-panel-flyouts"
+          aria-selected="false"
+          data-tab="flyouts"
+        >
+          Fly-outs
+        </button>
+      </div>
+
+      <div id="admin-panel-pilots" class="admin-panel" role="tabpanel" aria-labelledby="admin-tab-pilots">
+        <h3 class="admin-section-title">Pending pilot submissions</h3>
+        <p id="pilot-pending-empty" class="pilot-placeholder" hidden>No pending submissions.</p>
+        <div id="pilot-pending-list" class="admin-list" data-area="pilots-pending"></div>
+
+        <h3 class="admin-section-title">Live on Meet the Pilots</h3>
+        <p class="admin-section-help">
+          Edit a profile below and click Save changes. Remove from site hides it from the public page.
+        </p>
+        <p id="pilot-live-empty" class="pilot-placeholder" hidden>No live profiles yet.</p>
+        <div id="pilot-live-list" class="admin-list" data-area="pilots-live"></div>
+      </div>
+
+      <div
+        id="admin-panel-events"
+        class="admin-panel"
+        role="tabpanel"
+        aria-labelledby="admin-tab-events"
+        hidden
+      >
+        <h3 class="admin-section-title">Pending event submissions</h3>
+        <p id="event-pending-empty" class="pilot-placeholder" hidden>No pending submissions.</p>
+        <div id="event-pending-list" class="admin-list" data-area="events-pending"></div>
+
+        <h3 class="admin-section-title">Live on Events</h3>
+        <p class="admin-section-help">
+          Edit an event below and click Save changes. Remove from site hides it from the public page.
+        </p>
+        <p id="event-live-empty" class="pilot-placeholder" hidden>No live events yet.</p>
+        <div id="event-live-list" class="admin-list" data-area="events-live"></div>
+      </div>
+
+      <div
+        id="admin-panel-flyouts"
+        class="admin-panel"
+        role="tabpanel"
+        aria-labelledby="admin-tab-flyouts"
+        hidden
+      >
+        <h3 class="admin-section-title">Pending fly-out submissions</h3>
+        <p id="flyout-pending-empty" class="pilot-placeholder" hidden>No pending submissions.</p>
+        <div id="flyout-pending-list" class="admin-list" data-area="flyouts-pending"></div>
+
+        <h3 class="admin-section-title">Live on Plan Your Next Adventure</h3>
+        <p class="admin-section-help">
+          Edit a fly-out below and click Save changes. Remove from site hides it from the public page.
+        </p>
+        <p id="flyout-live-empty" class="pilot-placeholder" hidden>No live fly-outs yet.</p>
+        <div id="flyout-live-list" class="admin-list" data-area="flyouts-live"></div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import "../../scripts/admin.ts";
+</script>

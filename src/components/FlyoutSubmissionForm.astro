@@ -1,0 +1,91 @@
+---
+---
+
+<section class="pilot-form-section">
+  <h2>Suggest a Fly-Out</h2>
+
+  <div id="flyout-form-success" class="form-success" role="status" hidden>
+    <p><strong>Thank you — your suggestion was received.</strong></p>
+    <p>
+      Fly-outs are reviewed before they appear on this page. Yours will not be listed until
+      approved.
+    </p>
+  </div>
+
+  <div id="flyout-form-wrap">
+    <p>
+      Got a favorite hop from LRE we should list? Share the destination and why pilots enjoy it.
+      Every submission is saved for review — nothing goes live until it is approved.
+    </p>
+
+    <p id="flyout-form-error" class="form-error" hidden></p>
+
+    <form id="flyout-form" class="pilot-form">
+      <div class="form-field">
+        <label for="flyout-name">Destination</label>
+        <input
+          id="flyout-name"
+          name="name"
+          type="text"
+          required
+          placeholder="e.g. French Valley (F70)"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="flyout-meta">Flight time / distance <span class="form-optional">(optional)</span></label>
+        <input
+          id="flyout-meta"
+          name="meta"
+          type="text"
+          placeholder="e.g. ~9 min · ~17 nm"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="flyout-description">Why pilots enjoy it</label>
+        <textarea
+          id="flyout-description"
+          name="description"
+          rows="5"
+          required
+          placeholder="A few sentences about the hop — fuel, scenery, lunch spots, things to watch for, etc."
+        ></textarea>
+      </div>
+
+      <div class="form-field">
+        <label for="flyout-submitter-name">Your name</label>
+        <input
+          id="flyout-submitter-name"
+          name="submitter_name"
+          type="text"
+          required
+          autocomplete="name"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="flyout-submitter-email">Your email</label>
+        <input
+          id="flyout-submitter-email"
+          name="submitter_email"
+          type="email"
+          required
+          autocomplete="email"
+          placeholder="So we can reach you about your submission"
+        />
+      </div>
+
+      <p class="form-note">
+        By submitting, you agree that this fly-out may be published on flylre.com after approval.
+        Questions or changes? Email <a href="mailto:info@flylre.com">info@flylre.com</a>.
+      </p>
+
+      <button id="flyout-form-submit" type="submit" class="form-submit">Submit for review</button>
+    </form>
+  </div>
+</section>
+
+<script>
+  import "../scripts/flyout-submission.ts";
+</script>

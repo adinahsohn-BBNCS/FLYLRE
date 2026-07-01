@@ -7,7 +7,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
   description="54CL Lake Riverside Estates Airport — runway info, guest access, and pilot essentials for Fly LRE."
   current="explore"
 >
-  <div class="page">
+  <div class="page page-wide">
     <header class="hero hero-compact">
       <p class="hero-eyebrow">54CL · Lake Riverside Estates</p>
       <h1>Explore the Airport</h1>
@@ -20,8 +20,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         pilots who live here and the friends they bring to the field.
       </p>
       <p>
-        <strong>Visitors welcome with prior permission from residents.</strong> Email before you
-        arrive so your visit goes smoothly.
+        Visitors welcome with prior permission from residents. Before you fly in, please take a
+        moment to review the <a href="#airport-rules">airport rules</a> and
+        <a href="#airport-diagram">airport diagram</a>.
       </p>
     </section>
 
@@ -50,16 +51,169 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         </div>
         <div class="spec-item">
           <span class="spec-label">CTAF</span>
-          <span class="spec-value">122.9</span>
+          <span class="spec-value"><a href="#ctaf">122.9</a></span>
         </div>
         <div class="spec-item">
           <span class="spec-label">Fuel / Services</span>
-          <span class="spec-value">Not on field</span>
+          <span class="spec-value">None</span>
         </div>
         <div class="spec-item">
           <span class="spec-label">Airport Diagram</span>
-          <span class="spec-value">Coming soon</span>
+          <span class="spec-value"><a href="#airport-diagram">View diagram</a></span>
         </div>
+      </div>
+
+      <div id="ctaf" class="ctaf-guide">
+        <h3>CTAF (122.9)</h3>
+        <p>
+          Announce position and intentions on <strong>122.9</strong>. You can also key the mic
+          briefly on frequency for automated services:
+        </p>
+        <ul class="rules-list">
+          <li><strong>3 clicks</strong> — abbreviated weather</li>
+          <li><strong>4 clicks</strong> — full weather report</li>
+          <li><strong>5 clicks</strong> — pilot-controlled runway lighting</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="airport-diagram">
+      <h2>Airport Diagram</h2>
+      <figure class="airport-diagram">
+        <img
+          src="/images/54CL-Diagram.jpg"
+          alt="54CL airport diagram — Runway 10/28, visitor tie-downs, pattern altitude 4400 feet, CTAF 122.9, departures, and nearby obstructions"
+          width="908"
+          height="545"
+          loading="lazy"
+        />
+        <figcaption>
+          Drawing not to scale. Directions, elevations, and positional information are approximate.
+        </figcaption>
+      </figure>
+
+    <section id="airport-rules">
+      <h2>Airport Rules</h2>
+      <p>
+        Lake Riverside Estates Airport is an FAA restricted private-use airport, preserved for
+        property owners and guests of Lake Riverside Estates. Information regarding this airport is
+        voluntarily supplied by the LRE Pilots&rsquo; Association. Strict adherence to all
+        regulations promulgated by the FAA and the California Department of Aviation, as well as
+        compliance with the LRE Airport Conditional Use Permit, is required.
+      </p>
+      <p>
+        The LRE Pilots&rsquo; Association is keenly interested in maintaining a safe, responsible,
+        and considerate flying community. We recognize that the LRE Airport is of significant benefit
+        to the local community and to those LRE property owners who have invested significant time,
+        money, and energy in establishing and maintaining the airport. We petition you, the pilot,
+        to respect this investment and cooperate with us in maintaining good-neighbor policies with
+        our non-flying LRE area residents.
+      </p>
+    </section>
+
+    <section id="airport-procedures">
+      <h2>Field Procedures</h2>
+      <ul class="rules-list">
+        <li>Departing traffic use full runway length.</li>
+        <li>Do not park on runway — maintain 75&rsquo; behind runway lights.</li>
+        <li>
+          Guest aircraft use any unreserved tie-down in the visitor tie-down area, and must supply
+          their own straps, chains, or rope.
+        </li>
+        <li>Displaced threshold — both ends.</li>
+        <li>All concrete aprons and tie-downs are private.</li>
+        <li>Ditches and runway lights — both sides.</li>
+        <li>No fuel or transportation available.</li>
+        <li>Calm wind runway is <strong>10</strong>.</li>
+        <li>Announce position and intentions on CTAF (<a href="#ctaf">122.9</a>).</li>
+      </ul>
+
+      <div class="spec-grid">
+        <div class="spec-item">
+          <span class="spec-label">Field elevation</span>
+          <span class="spec-value">3,410&rsquo; MSL</span>
+        </div>
+        <div class="spec-item">
+          <span class="spec-label">Runway</span>
+          <span class="spec-value">10/28 · 3,500&rsquo; × 75&rsquo; paved, lighted</span>
+        </div>
+        <div class="spec-item spec-item-wide">
+          <span class="spec-label">Caution</span>
+          <span class="spec-value">Low-level military training in area</span>
+        </div>
+      </div>
+
+      <p class="note">
+        Directions, elevations, and positional information are approximate. Procedures based on LRE
+        Pilots&rsquo; Association information sheet (rev 09/20/23), updated for current paved runway.
+      </p>
+    </section>
+
+    <section>
+      <h2>Association Regulations</h2>
+      <p>
+        Excerpt from Lake Riverside Estates Community Association Rules and Regulations (10-15-05).
+        Lake Riverside Estates Airport is an FAA restricted private-use airport solely for use by
+        LRE members and their guests. (CC&amp;Rs p. 22)
+      </p>
+      <ol class="rules-list rules-list-numbered">
+        <li>
+          All aircraft using the runway and designated parking areas must be insured for liability
+          and property damage.
+        </li>
+        <li>
+          All pilots using the airstrip must be licensed, where required by the FAA, and meet all
+          FAA requirements for piloting their aircraft.
+        </li>
+        <li>
+          All aircraft using the tie-down areas must be no more than six months out of annual
+          inspection. The Association has the right to remove non-compliant or abandoned aircraft
+          from the tie-down area at the owner&rsquo;s expense.
+        </li>
+        <li>No aircraft may park on the runway or within 75&rsquo; of the edge of the runway.</li>
+        <li>
+          Nothing shall be constructed or placed within the &ldquo;Object Free Zone&rdquo; in
+          accordance with policies set forth by the FAA.
+        </li>
+        <li>
+          Aircraft not housed or tied down at a residence adjacent to the airport or in the
+          designated tie-down areas must be towed to and from the airport.
+        </li>
+        <li>
+          All pilots utilizing the airport should review this information and procedures page.
+          Copies are also available at the association office or from members of the Lake Riverside
+          Estates Airport Committee.
+        </li>
+        <li>All aircraft using the runway must be equipped for two-way radio communication.</li>
+        <li>
+          All pilots using the runway must announce their intentions on <strong>122.9</strong> before
+          taking the runway, entering the pattern, or back-taxiing.
+        </li>
+        <li>All pilots must follow the appropriate traffic pattern.</li>
+        <li>
+          Members must be present to meet their guests as they arrive, or provide a letter of
+          authorization.
+        </li>
+        <li>
+          No parking on a private lot adjacent to the runway is permitted unless invited by the
+          owner.
+        </li>
+        <li>No touch-and-goes are allowed.</li>
+        <li>
+          When departing, pilots should use the best angle of climb and be noise sensitive at all
+          times. Calm wind runway is <strong>10</strong>.
+        </li>
+        <li>No unauthorized vehicles or persons are permitted on the runway.</li>
+      </ol>
+
+      <div class="cta-box">
+        <p><strong>Guest aircraft parking</strong></p>
+        <p>
+          Guests of LRE property owners may park in the designated transient parking area for not
+          more than <strong>30 consecutive days</strong> in a twelve-month period from the first day
+          the aircraft arrives. Any longer stay requires written board approval (revised August 15,
+          2015).
+        </p>
       </div>
     </section>
 
@@ -67,11 +221,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       <h2>Flying In</h2>
       <ul>
         <li>Private airfield — LRE residents and their guests only</li>
-        <li>Announce on <strong>122.9</strong> before pattern entry, back-taxi, or takeoff</li>
         <li>Check windsocks (midfield and east end) for Runway 10 vs 28</li>
         <li>Confirm runway status before departure — watch for threshold <strong>X</strong> markings during maintenance</li>
-        <li>Noise-sensitive departures; calm-wind runway is typically <strong>10</strong></li>
-        <li>Transient tie-downs on the west end (Runway 10)</li>
+        <li>Noise-sensitive departures; transient tie-downs on the west end (Runway 10)</li>
       </ul>
     </section>
 
@@ -114,9 +266,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <div class="cta-box">
       <p><strong>Planning a visit?</strong></p>
       <p>
-        Visitors welcome with prior permission from residents. Email
-        <a href="mailto:info@flylre.com">info@flylre.com</a> with your host&rsquo;s name, dates,
-        and aircraft type if you&rsquo;re flying in.
+        Visitors welcome with prior permission from residents. Before you fly in, please take a
+        moment to review the <a href="#airport-rules">airport rules</a> and
+        <a href="#airport-diagram">airport diagram</a> on this page.
       </p>
     </div>
   </div>

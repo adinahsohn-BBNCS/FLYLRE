@@ -1,13 +1,19 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import WeatherStation from "../components/WeatherStation.astro";
 ---
 
 <BaseLayout title="Fly LRE" current="home">
-  <div class="page">
+  <div class="page page-home">
     <header class="hero">
-      <p class="hero-eyebrow">Lake Riverside Estates · 54CL</p>
-      <h1>Fly LRE</h1>
-      <p class="hero-tagline">Adventure Begins at the End of the Runway.</p>
+      <img
+        class="hero-brand"
+        src="/images/LRE.png"
+        alt="Fly LRE — Lake Riverside Estates. Adventure Begins at the End of the Runway."
+        width="640"
+        height="640"
+        fetchpriority="high"
+      />
       <p class="hero-sub">
         For pilots at Lake Riverside Estates — and friends invited to visit.
         Visitors welcome with prior permission from residents.
@@ -27,8 +33,30 @@ import BaseLayout from "../layouts/BaseLayout.astro";
       </a>
     </div>
 
+    <WeatherStation />
+
+    <section id="pilot-spotlight" class="pilot-spotlight" hidden>
+      <p class="pilot-spotlight-eyebrow">Pilot Spotlight</p>
+      <h2 class="pilot-spotlight-title">A pilot at LRE</h2>
+      <p id="pilot-spotlight-loading" class="pilot-loading">Loading pilot spotlight…</p>
+      <article id="pilot-spotlight-card" class="pilot-spotlight-card" hidden></article>
+      <p class="pilot-spotlight-link">
+        <a href="/meet-the-pilots/">Meet all the pilots →</a>
+      </p>
+    </section>
+
     <div class="cta-box">
-      <p><strong>Planning a visit?</strong> Email <a href="mailto:info@flylre.com">info@flylre.com</a> with your host&rsquo;s name, dates, and aircraft type if you&rsquo;re flying in.</p>
+      <p><strong>Planning a visit?</strong></p>
+      <p>
+        Visitors welcome with prior permission from residents. Before you fly in, please take a
+        moment to review the
+        <a href="/explore-the-airport/#airport-rules">airport rules</a> and
+        <a href="/explore-the-airport/#airport-diagram">airport diagram</a>.
+      </p>
     </div>
   </div>
 </BaseLayout>
+
+<script>
+  import "../scripts/pilot-spotlight.ts";
+</script>

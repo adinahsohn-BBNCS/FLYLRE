@@ -2,5 +2,9 @@ dist/
 .astro/
 node_modules/
 .env
-.env.*
+!.env.example
+.env.deploy
+!.env.deploy.example
+.env.local
+.env.*.local
 .DS_Store

@@ -1,0 +1,89 @@
+---
+---
+
+<section class="pilot-form-section">
+  <h2>Add Your Profile</h2>
+
+  <div id="pilot-form-success" class="form-success" role="status" hidden>
+    <p><strong>Thank you — your submission was received.</strong></p>
+    <p>
+      Profiles are reviewed before they appear on this page. You will not be listed until
+      approved. Once live, your profile may also appear in the home page Pilot Spotlight.
+    </p>
+  </div>
+
+  <div id="pilot-form-wrap">
+    <p>
+      Live at Lake Riverside Estates and want to be listed here? Submit your information below.
+      Every submission is saved for review — nothing goes live until it is approved. Approved
+      profiles may also appear in the random Pilot Spotlight on the home page.
+    </p>
+
+    <p id="pilot-form-error" class="form-error" hidden></p>
+
+    <form id="pilot-form" class="pilot-form">
+      <div class="form-field">
+        <label for="pilot-name">Name</label>
+        <input id="pilot-name" name="name" type="text" required autocomplete="name" />
+      </div>
+
+      <div class="form-field">
+        <label for="pilot-email">Email</label>
+        <input
+          id="pilot-email"
+          name="email"
+          type="email"
+          required
+          autocomplete="email"
+          placeholder="So we can reach you about your submission"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="pilot-aircraft">Aircraft <span class="form-optional">(optional)</span></label>
+        <input
+          id="pilot-aircraft"
+          name="aircraft"
+          type="text"
+          placeholder="e.g. Cessna 182, RV-10"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="pilot-bio">About you</label>
+        <textarea
+          id="pilot-bio"
+          name="bio"
+          rows="5"
+          required
+          placeholder="A few sentences about your flying at LRE — how long you've been here, favorite hops, what you fly, etc."
+        ></textarea>
+      </div>
+
+      <div class="form-field">
+        <label for="pilot-photo">
+          Photo of your plane <span class="form-optional">(optional)</span>
+        </label>
+        <input
+          id="pilot-photo"
+          name="photo"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+        />
+        <p class="form-hint">JPG, PNG, or WebP. Max 5 MB.</p>
+      </div>
+
+      <p class="form-note">
+        By submitting, you agree that your information and photo may be published on flylre.com
+        after approval, including the home page Pilot Spotlight. You can ask for edits or removal
+        anytime at <a href="mailto:info@flylre.com">info@flylre.com</a>.
+      </p>
+
+      <button id="pilot-form-submit" type="submit" class="form-submit">Submit for review</button>
+    </form>
+  </div>
+</section>
+
+<script>
+  import "../scripts/pilot-submission.ts";
+</script>

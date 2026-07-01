@@ -4,10 +4,16 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "astro dev",
+    "dev:clean": "powershell -ExecutionPolicy Bypass -File scripts/dev-clean.ps1",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "preview:clean": "powershell -ExecutionPolicy Bypass -File scripts/preview-clean.ps1",
+    "deploy": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1",
+    "deploy:dry": "powershell -ExecutionPolicy Bypass -File scripts/deploy.ps1 -DryRun",
+    "logo:process": "node scripts/remove-logo-background.mjs"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.49.1",
     "astro": "^5.7.0"
   }
 }

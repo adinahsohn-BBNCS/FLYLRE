@@ -111,6 +111,7 @@ img {
   text-transform: uppercase;
   color: var(--cloud);
   text-decoration: none;
+  flex-shrink: 0;
 }
 
 .logo:hover {
@@ -118,6 +119,19 @@ img {
 }
 
 .logo span {
+  color: var(--runway-amber);
+}
+
+.logo-id {
+  margin-left: 0.4em;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  color: var(--cloud-muted);
+}
+
+.logo:hover .logo-id {
   color: var(--runway-amber);
 }
 
@@ -155,11 +169,38 @@ nav a[aria-current="page"] {
   max-width: 960px;
 }
 
+.page-home {
+  padding-top: 1.25rem;
+}
+
+.page-home .hero {
+  padding: 0.25rem 0 1rem;
+}
+
+.page-home .hero-brand {
+  margin-bottom: 0;
+}
+
+.page-home .hero-sub {
+  margin-top: -1.35rem;
+}
+
+.page-home .card-grid {
+  margin-top: 1.5rem;
+}
+
 /* Hero */
 
 .hero {
   text-align: center;
-  padding: 3rem 0 2.5rem;
+  padding: 2rem 0 2.25rem;
+}
+
+.hero-brand {
+  display: block;
+  width: min(100%, 640px);
+  height: auto;
+  margin: 0 auto 1.25rem;
 }
 
 .hero-compact {
@@ -168,8 +209,8 @@ nav a[aria-current="page"] {
 
 .hero-eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: 0.2em;
+  font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--runway-amber);
   margin: 0 0 0.75rem;
@@ -326,6 +367,197 @@ li {
   color: var(--cloud);
 }
 
+.spec-item-wide {
+  grid-column: 1 / -1;
+}
+
+.ctaf-guide {
+  margin-top: 1.5rem;
+  padding: 1.25rem 1.25rem 0.75rem;
+  background: var(--sky-mid);
+  border: 1px solid rgba(158, 179, 201, 0.12);
+  border-radius: 4px;
+}
+
+.ctaf-guide h3 {
+  margin-top: 0;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--runway-amber);
+}
+
+.ctaf-guide .rules-list {
+  margin-bottom: 0;
+}
+
+.rules-list {
+  margin: 0 0 1.25rem;
+  padding-left: 1.25rem;
+}
+
+.rules-list li {
+  margin-bottom: 0.5rem;
+}
+
+.rules-list-numbered {
+  padding-left: 1.5rem;
+}
+
+.rules-list-numbered li {
+  margin-bottom: 0.65rem;
+  padding-left: 0.25rem;
+}
+
+.airport-diagram {
+  margin: 1rem 0 0;
+}
+
+.airport-diagram img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid rgba(158, 179, 201, 0.2);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.airport-diagram figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: var(--cloud-muted);
+  font-style: italic;
+  text-align: center;
+}
+
+/* Onsite weather */
+
+.weather-station {
+  background: linear-gradient(135deg, var(--sky-light) 0%, var(--sky-mid) 100%);
+  border: 1px solid var(--runway-amber-dim);
+  border-left: 4px solid var(--runway-amber);
+  border-radius: 4px;
+  padding: 1.5rem;
+  margin: 2rem 0;
+}
+
+.weather-station-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.weather-station-header h2 {
+  margin: 0;
+  padding: 0;
+  border: none;
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cloud);
+}
+
+.weather-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--runway-amber);
+  margin: 0 0 0.35rem;
+}
+
+.weather-dashboard-link {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--runway-amber);
+}
+
+.weather-dashboard-link:hover {
+  color: #f5b84a;
+}
+
+.weather-loading,
+.weather-error {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--cloud-muted);
+}
+
+.weather-error {
+  color: #ffd2a8;
+}
+
+.weather-grid {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 0.75rem;
+}
+
+@media (min-width: 560px) {
+  .weather-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.weather-metric {
+  background: rgba(10, 22, 40, 0.35);
+  border: 1px solid rgba(158, 179, 201, 0.12);
+  border-radius: 4px;
+  padding: 0.85rem 1rem;
+}
+
+.weather-metric-primary {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 560px) {
+  .weather-metric-primary {
+    grid-column: auto;
+  }
+}
+
+.weather-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--cloud-muted);
+  margin-bottom: 0.25rem;
+}
+
+.weather-value {
+  display: block;
+  font-size: 1rem;
+  color: var(--cloud);
+}
+
+.weather-metric-primary .weather-value {
+  font-size: 1.35rem;
+  font-weight: 600;
+}
+
+.weather-updated {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--cloud-muted);
+}
+
+.weather-note {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--cloud-muted);
+}
+
 /* CTA box */
 
 .cta-box {
@@ -386,6 +618,583 @@ li {
   color: var(--cloud-muted);
 }
 
+/* Event cards */
+
+.event-list {
+  display: grid;
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.event-card {
+  display: flex;
+  background: var(--sky-mid);
+  border: 1px solid rgba(158, 179, 201, 0.12);
+  border-radius: 4px;
+  overflow: hidden;
+  scroll-margin-top: calc(var(--nav-height) + 1rem);
+}
+
+.event-date-rail {
+  flex: 0 0 4.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.15rem 0.65rem;
+  background: rgba(240, 160, 48, 0.1);
+  border-right: 1px solid rgba(240, 160, 48, 0.28);
+  text-align: center;
+}
+
+.event-date-rail time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.12rem;
+}
+
+.event-date-rail-day {
+  font-family: var(--font-mono);
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--runway-amber);
+}
+
+.event-date-rail-month {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--runway-amber);
+}
+
+.event-date-rail-weekday {
+  margin-top: 0.2rem;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  color: var(--cloud-muted);
+}
+
+.event-card-body {
+  flex: 1;
+  min-width: 0;
+  padding: 1.25rem 1.5rem;
+}
+
+.event-card-body h3 {
+  margin: 0 0 0.5rem;
+  font-size: 1.05rem;
+  color: var(--cloud);
+}
+
+.event-card--past .event-date-rail {
+  background: rgba(158, 179, 201, 0.06);
+  border-right-color: rgba(158, 179, 201, 0.15);
+}
+
+.event-card--past .event-date-rail-day,
+.event-card--past .event-date-rail-month {
+  color: var(--cloud-muted);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.event-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.event-meta {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cloud-muted);
+}
+
+.event-card p:last-child {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--cloud-muted);
+}
+
+/* Pilot profiles */
+
+.pilot-spotlight {
+  margin: 0 0 2.5rem;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--sky-light) 0%, var(--sky-mid) 100%);
+  border: 1px solid var(--runway-amber-dim);
+  border-left: 4px solid var(--runway-amber);
+  border-radius: 4px;
+}
+
+.pilot-spotlight-eyebrow {
+  font-family: var(--font-mono);
+  font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--runway-amber);
+  margin: 0 0 0.35rem;
+}
+
+.pilot-spotlight-title {
+  margin: 0 0 1rem;
+  font-size: 1.15rem;
+  color: var(--cloud);
+}
+
+.pilot-spotlight-card {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 520px) {
+  .pilot-spotlight-card {
+    grid-template-columns: minmax(140px, 200px) 1fr;
+    align-items: start;
+  }
+}
+
+.pilot-spotlight-photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid rgba(158, 179, 201, 0.15);
+}
+
+.pilot-spotlight-body h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  color: var(--cloud);
+}
+
+.pilot-spotlight-bio {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--cloud-muted);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  overflow: hidden;
+}
+
+.pilot-spotlight-link {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.pilot-grid {
+  display: grid;
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+@media (min-width: 560px) {
+  .pilot-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pilot-card {
+  background: var(--sky-mid);
+  border: 1px solid rgba(158, 179, 201, 0.12);
+  border-radius: 4px;
+  padding: 1.5rem;
+}
+
+.pilot-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+  color: var(--cloud);
+}
+
+.pilot-aircraft {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--runway-amber);
+  margin: 0 0 0.75rem;
+}
+
+.pilot-card p:last-child {
+  margin-bottom: 0;
+  font-size: 0.92rem;
+  color: var(--cloud-muted);
+}
+
+.pilot-photo {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  border: 1px solid rgba(158, 179, 201, 0.15);
+}
+
+.pilot-loading {
+  color: var(--cloud-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.pilot-placeholder {
+  background: var(--sky-mid);
+  border: 1px dashed rgba(158, 179, 201, 0.25);
+  border-radius: 4px;
+  padding: 1.75rem;
+  text-align: center;
+}
+
+.pilot-placeholder p:last-child {
+  margin-bottom: 0;
+}
+
+/* Pilot submission form */
+
+.pilot-form-section {
+  margin-bottom: 2.5rem;
+}
+
+.form-field {
+  margin-bottom: 1.25rem;
+}
+
+.form-field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cloud);
+  margin-bottom: 0.4rem;
+}
+
+.form-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--cloud-muted);
+  font-size: 0.75rem;
+}
+
+.form-field input,
+.form-field textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--cloud);
+  background: var(--sky-mid);
+  border: 1px solid rgba(158, 179, 201, 0.2);
+  border-radius: 4px;
+}
+
+.form-field input:focus,
+.form-field textarea:focus {
+  outline: 2px solid var(--runway-amber);
+  outline-offset: 1px;
+  border-color: var(--runway-amber-dim);
+}
+
+.form-field textarea {
+  resize: vertical;
+  min-height: 7rem;
+}
+
+.form-field input[type="file"] {
+  padding: 0.5rem 0;
+  font-size: 0.85rem;
+  color: var(--cloud-muted);
+  border: none;
+  background: transparent;
+}
+
+.form-field input[type="file"]::file-selector-button {
+  margin-right: 0.75rem;
+  padding: 0.45rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--cloud);
+  background: var(--sky-light);
+  border: 1px solid rgba(158, 179, 201, 0.25);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form-field input[type="file"]::file-selector-button:hover {
+  border-color: var(--runway-amber);
+}
+
+.form-hint {
+  margin: 0.4rem 0 0;
+  font-size: 0.8rem;
+  color: var(--cloud-muted);
+}
+
+.form-honey {
+  position: absolute;
+  left: -9999px;
+  opacity: 0;
+}
+
+.form-note {
+  font-size: 0.85rem;
+  color: var(--cloud-muted);
+  margin-bottom: 1.25rem;
+}
+
+.form-submit {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--sky-deep);
+  background: var(--runway-amber);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.form-submit:hover {
+  background: #f5b84a;
+}
+
+.form-success {
+  background: var(--sky-mid);
+  border: 1px solid var(--runway-amber-dim);
+  border-left: 4px solid var(--runway-amber);
+  border-radius: 4px;
+  padding: 1.5rem;
+}
+
+.form-success p:last-child {
+  margin-bottom: 0;
+}
+
+.form-error {
+  color: #ffb4b4;
+  background: rgba(180, 40, 40, 0.15);
+  border: 1px solid rgba(255, 120, 120, 0.35);
+  border-radius: 4px;
+  padding: 0.85rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Admin review */
+
+.admin-login-form {
+  max-width: 28rem;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1.5rem 0 2rem;
+  border-bottom: 1px solid rgba(158, 179, 201, 0.15);
+}
+
+.admin-tab {
+  margin-bottom: -1px;
+  padding: 0.65rem 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cloud-muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+}
+
+.admin-tab:hover {
+  color: var(--cloud);
+}
+
+.admin-tab-active {
+  color: var(--runway-amber);
+  border-bottom-color: var(--runway-amber);
+}
+
+.admin-panel[hidden] {
+  display: none;
+}
+
+.admin-review-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-review-bar h2 {
+  margin: 0;
+  border: none;
+  padding: 0;
+}
+
+.admin-logout {
+  background: transparent;
+  border: 1px solid rgba(158, 179, 201, 0.35);
+  color: var(--cloud-muted);
+  padding: 0.45rem 0.85rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.admin-logout:hover {
+  color: var(--cloud);
+  border-color: var(--runway-amber);
+}
+
+.admin-list {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.admin-section-title {
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--runway-amber);
+  margin: 2rem 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(240, 160, 48, 0.25);
+}
+
+.admin-section-title:first-of-type {
+  margin-top: 0;
+}
+
+.admin-section-help {
+  font-size: 0.9rem;
+  color: var(--cloud-muted);
+  margin: 0 0 1rem;
+}
+
+.admin-card-edit .form-field label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cloud);
+  margin-bottom: 0.4rem;
+}
+
+.admin-card-edit input,
+.admin-card-edit textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--cloud);
+  background: var(--sky-deep);
+  border: 1px solid rgba(158, 179, 201, 0.2);
+  border-radius: 4px;
+}
+
+.admin-card-edit textarea {
+  resize: vertical;
+  min-height: 6rem;
+}
+
+.admin-card {
+  background: var(--sky-mid);
+  border: 1px solid rgba(158, 179, 201, 0.12);
+  border-radius: 4px;
+  padding: 1.5rem;
+}
+
+.admin-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.admin-card-header h3 {
+  margin: 0;
+}
+
+.admin-card-header time {
+  font-size: 0.8rem;
+  color: var(--cloud-muted);
+}
+
+.admin-meta {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+.admin-bio {
+  margin: 0.75rem 0 1rem;
+  color: var(--cloud-muted);
+}
+
+.admin-photo-link {
+  color: var(--accent-blue);
+}
+
+.admin-muted {
+  color: var(--cloud-muted);
+  font-size: 0.9rem;
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.admin-reject {
+  padding: 0.75rem 1.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cloud);
+  background: transparent;
+  border: 1px solid rgba(158, 179, 201, 0.35);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.admin-reject:hover {
+  border-color: #ffb4b4;
+  color: #ffb4b4;
+}
+
 .note {
   font-size: 0.85rem;
   color: var(--cloud-muted);
@@ -400,9 +1209,9 @@ li {
 .site-footer {
   position: relative;
   z-index: 1;
-  border-top: 1px solid rgba(158, 179, 201, 0.12);
+  border-top: 1px solid rgba(240, 160, 48, 0.2);
   background: rgba(10, 22, 40, 0.95);
-  padding: 2rem 1.25rem;
+  padding: 2.5rem 1.25rem;
   text-align: center;
   font-size: 0.85rem;
   color: var(--cloud-muted);
@@ -419,17 +1228,44 @@ li {
 
 .footer-brand {
   font-weight: 700;
+  font-size: 1.35rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--cloud);
-  margin-bottom: 0.5rem;
+  color: var(--runway-amber);
+  margin: 0 0 0.35rem;
+}
+
+.footer-brand-tld {
+  margin-left: 0.05em;
+  font-family: var(--font-mono);
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--cloud-muted);
 }
 
 .footer-tagline {
-  font-style: italic;
-  margin-bottom: 1rem;
+  font-size: 1.05rem;
+  color: var(--runway-amber);
+  margin: 0 0 1.25rem;
 }
 
 .footer-visit {
-  margin-bottom: 0.75rem;
+  margin: 0 0 0.75rem;
+  font-style: italic;
+}
+
+.footer-admin-link {
+  margin: 1.25rem 0 0;
+  font-size: 0.75rem;
+}
+
+.footer-admin-link a {
+  color: var(--cloud-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.footer-admin-link a:hover {
+  color: var(--runway-amber);
 }

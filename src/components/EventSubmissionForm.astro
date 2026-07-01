@@ -1,0 +1,102 @@
+---
+---
+
+<section class="pilot-form-section">
+  <h2>Submit an Event</h2>
+
+  <div id="event-form-success" class="form-success" role="status" hidden>
+    <p><strong>Thank you — your event was received.</strong></p>
+    <p>
+      Events are reviewed before they appear on this page. Yours will not be listed until
+      approved.
+    </p>
+  </div>
+
+  <div id="event-form-wrap">
+    <p>
+      Hosting something at Lake Riverside Estates or inviting the community? Share the details
+      below. Every submission is saved for review — nothing goes live until it is approved.
+    </p>
+
+    <p id="event-form-error" class="form-error" hidden></p>
+
+    <form id="event-form" class="pilot-form">
+      <div class="form-field">
+        <label for="event-title">Event title</label>
+        <input
+          id="event-title"
+          name="title"
+          type="text"
+          required
+          placeholder="e.g. Community fly-in breakfast"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="event-date">Date</label>
+        <input id="event-date" name="event_date" type="date" required />
+      </div>
+
+      <div class="form-field">
+        <label for="event-time">Time <span class="form-optional">(optional)</span></label>
+        <input id="event-time" name="event_time" type="time" step="900" />
+        <p class="form-hint">15-minute increments. Leave blank if time is not set yet.</p>
+      </div>
+
+      <div class="form-field">
+        <label for="event-location">Location <span class="form-optional">(optional)</span></label>
+        <input
+          id="event-location"
+          name="location"
+          type="text"
+          placeholder="e.g. LRE hangar, 54CL ramp"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="event-description">Description</label>
+        <textarea
+          id="event-description"
+          name="description"
+          rows="5"
+          required
+          placeholder="What is happening, who is invited, and anything guests should know."
+        ></textarea>
+      </div>
+
+      <div class="form-field">
+        <label for="event-submitter-name">Your name</label>
+        <input
+          id="event-submitter-name"
+          name="submitter_name"
+          type="text"
+          required
+          autocomplete="name"
+        />
+      </div>
+
+      <div class="form-field">
+        <label for="event-submitter-email">Your email</label>
+        <input
+          id="event-submitter-email"
+          name="submitter_email"
+          type="email"
+          required
+          autocomplete="email"
+          placeholder="So we can reach you about your submission"
+        />
+      </div>
+
+      <p class="form-note">
+        By submitting, you agree that this event may be published on flylre.com after approval.
+        Questions or changes? Email <a href="mailto:info@flylre.com">info@flylre.com</a>.
+      </p>
+
+      <button id="event-form-submit" type="submit" class="form-submit">Submit for review</button>
+    </form>
+  </div>
+</section>
+
+<script>
+  import "../scripts/event-submission.ts";
+</script>
