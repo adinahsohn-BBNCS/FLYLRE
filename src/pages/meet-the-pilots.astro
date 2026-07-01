@@ -1,0 +1,56 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PilotSubmissionForm from "../components/PilotSubmissionForm.astro";
+---
+
+<BaseLayout
+  title="Meet the Pilots"
+  description="Pilots who live and fly at Lake Riverside Estates (54CL) — the Fly LRE community."
+  current="pilots"
+>
+  <div class="page page-wide">
+    <header class="hero hero-compact">
+      <p class="hero-eyebrow">The Fly LRE community</p>
+      <h1>Meet the Pilots</h1>
+      <p class="hero-tagline">Adventure Begins at the End of the Runway.</p>
+    </header>
+
+    <section>
+      <p>
+        Lake Riverside Estates is a fly-in community — pilots and their aircraft are at the center
+        of life here. This page introduces the aviators who call <strong>54CL</strong> home, share
+        the runway, and know the valley from the pattern to the wine country run.
+      </p>
+      <p>
+        If you are visiting a friend at LRE, you may meet some of these pilots on the field.
+        <strong>Visitors welcome with prior permission from residents.</strong>
+      </p>
+    </section>
+
+    <section>
+      <h2>Pilots at LRE</h2>
+      <p id="pilot-list-loading" class="pilot-loading">Loading pilot profiles…</p>
+      <p id="pilot-list-empty" class="pilot-placeholder" hidden>
+        No pilot profiles are live yet. Residents can submit their information below — listings
+        appear here after approval.
+      </p>
+      <div id="pilot-list" class="pilot-grid"></div>
+    </section>
+
+    <PilotSubmissionForm />
+
+    <div class="cta-box">
+      <p><strong>Planning a visit?</strong></p>
+      <p>
+        Visitors welcome with prior permission from residents. Before you fly in, please take a
+        moment to review the
+        <a href="/explore-the-airport/#airport-rules">airport rules</a> and
+        <a href="/explore-the-airport/#airport-diagram">airport diagram</a>.
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import "../scripts/pilot-list.ts";
+</script>

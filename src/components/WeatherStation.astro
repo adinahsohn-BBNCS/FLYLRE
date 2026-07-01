@@ -1,0 +1,69 @@
+---
+const stationId = import.meta.env.PUBLIC_WEATHER_STATION_ID ?? "KCAAGUAN61";
+const dashboardUrl = `https://www.wunderground.com/dashboard/pws/${stationId}`;
+---
+
+<section
+  id="weather-station"
+  class="weather-station"
+  aria-labelledby="weather-heading"
+  data-station-id={stationId}
+  data-dashboard-url={dashboardUrl}
+  data-api-key={import.meta.env.PUBLIC_WEATHER_API_KEY ?? ""}
+>
+  <div class="weather-station-header">
+    <div>
+      <p class="weather-eyebrow">Onsite PWS · 54CL</p>
+      <h2 id="weather-heading">Field Weather</h2>
+    </div>
+    <a
+      id="weather-dashboard-link"
+      class="weather-dashboard-link"
+      href={dashboardUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Full station →
+    </a>
+  </div>
+
+  <p id="weather-loading" class="weather-loading">Loading current conditions…</p>
+  <p id="weather-error" class="weather-error" hidden></p>
+
+  <div id="weather-content" class="weather-grid" hidden>
+    <div class="weather-metric weather-metric-primary">
+      <span class="weather-label">Temperature</span>
+      <span id="weather-temp" class="weather-value">—</span>
+    </div>
+    <div class="weather-metric">
+      <span class="weather-label">Wind</span>
+      <span id="weather-wind" class="weather-value">—</span>
+    </div>
+    <div class="weather-metric">
+      <span class="weather-label">Pressure</span>
+      <span id="weather-pressure" class="weather-value">—</span>
+    </div>
+    <div class="weather-metric">
+      <span class="weather-label">Dew point</span>
+      <span id="weather-dewpt" class="weather-value">—</span>
+    </div>
+    <div class="weather-metric">
+      <span class="weather-label">Humidity</span>
+      <span id="weather-humidity" class="weather-value">—</span>
+    </div>
+    <div class="weather-metric">
+      <span class="weather-label">Precip</span>
+      <span id="weather-precip" class="weather-value">—</span>
+    </div>
+  </div>
+
+  <p id="weather-updated" class="weather-updated"></p>
+  <p class="weather-note">
+    From the Lake Riverside onsite station ({stationId}). Not a substitute for an official AWOS or
+    METAR — verify conditions before flight.
+  </p>
+</section>
+
+<script>
+  import "../scripts/weather-station.ts";
+</script>

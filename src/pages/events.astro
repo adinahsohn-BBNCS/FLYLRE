@@ -1,0 +1,56 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import EventSubmissionForm from "../components/EventSubmissionForm.astro";
+---
+
+<BaseLayout
+  title="Events"
+  description="Community events at Lake Riverside Estates (54CL) — fly-ins, gatherings, and happenings at Fly LRE."
+  current="events"
+>
+  <div class="page page-wide">
+    <header class="hero hero-compact">
+      <p class="hero-eyebrow">The Fly LRE community</p>
+      <h1>Events</h1>
+      <p class="hero-tagline">Adventure Begins at the End of the Runway.</p>
+    </header>
+
+    <section>
+      <p>
+        Fly-ins, hangar gatherings, and community happenings at <strong>54CL</strong>. Approved
+        events are listed below — residents and guests can submit new ones for review.
+      </p>
+    </section>
+
+    <section>
+      <h2>Upcoming</h2>
+      <p id="event-list-loading" class="pilot-loading">Loading events…</p>
+      <p id="event-list-upcoming-empty" class="pilot-placeholder" hidden>
+        No upcoming events are listed yet. Submit one below — listings appear here after approval.
+      </p>
+      <div id="event-list-upcoming" class="event-list"></div>
+    </section>
+
+    <section id="event-past-section" hidden>
+      <h2>Past events</h2>
+      <p id="event-list-past-empty" class="pilot-placeholder" hidden>No past events to show.</p>
+      <div id="event-list-past" class="event-list"></div>
+    </section>
+
+    <EventSubmissionForm />
+
+    <div class="cta-box">
+      <p><strong>Planning a visit?</strong></p>
+      <p>
+        Visitors welcome with prior permission from residents. Before you fly in, please take a
+        moment to review the
+        <a href="/explore-the-airport/#airport-rules">airport rules</a> and
+        <a href="/explore-the-airport/#airport-diagram">airport diagram</a>.
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<script>
+  import "../scripts/event-list.ts";
+</script>

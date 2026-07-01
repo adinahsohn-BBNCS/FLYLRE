@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import FlyoutSubmissionForm from "../components/FlyoutSubmissionForm.astro";
 
 const flyouts = [
   {
@@ -114,6 +115,15 @@ const sampleDays = [
       </div>
     </section>
 
+    <section id="community-flyouts" hidden>
+      <h2>From Local Pilots</h2>
+      <p id="flyout-list-loading" class="pilot-loading">Loading fly-outs from local pilots…</p>
+      <p id="flyout-list-empty" class="pilot-placeholder" hidden>
+        No fly-outs from local pilots are live yet.
+      </p>
+      <div id="flyout-list" class="flyout-list"></div>
+    </section>
+
     <section>
       <h2>Morning from LRE</h2>
       {sampleDays.map((day) => (
@@ -125,10 +135,17 @@ const sampleDays = [
     </section>
 
     <div class="cta-box">
-      <p>Got a favorite hop from LRE we should list?</p>
+      <p><strong>What&rsquo;s happening at LRE?</strong></p>
       <p>
-        Email <a href="mailto:info@flylre.com">info@flylre.com</a> — community suggestions welcome.
+        See upcoming community events — fly-ins, gatherings, and more on the
+        <a href="/events/">Events</a> page. Residents and guests can submit events for review.
       </p>
     </div>
+
+    <FlyoutSubmissionForm />
   </div>
 </BaseLayout>
+
+<script>
+  import "../scripts/flyout-list.ts";
+</script>
