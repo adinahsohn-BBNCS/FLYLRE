@@ -25,7 +25,18 @@ const fullTitle = title === "Fly LRE" ? title : `${title} · Fly LRE`;
     <header class="site-header">
       <div class="nav-inner">
         <a class="logo" href="/">Fly <span>LRE</span><span class="logo-id">54CL</span></a>
-        <nav aria-label="Main">
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          aria-label="Open menu"
+        >
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+          <span class="nav-toggle-bar" aria-hidden="true"></span>
+        </button>
+        <nav id="site-nav" aria-label="Main">
           <ul>
             <li><a href="/" aria-current={current === "home" ? "page" : undefined}>Home</a></li>
             <li><a href="/explore-the-airport/" aria-current={current === "explore" ? "page" : undefined}>Explore the Airport</a></li>
@@ -50,6 +61,30 @@ const fullTitle = title === "Fly LRE" ? title : `${title} · Fly LRE`;
     </footer>
   </body>
 </html>
+
+<script>
+  const header = document.querySelector(".site-header");
+  const toggle = document.querySelector(".nav-toggle");
+  const nav = document.getElementById("site-nav");
+
+  function setNavOpen(open: boolean) {
+    header?.classList.toggle("nav-open", open);
+    toggle?.setAttribute("aria-expanded", String(open));
+    toggle?.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  }
+
+  toggle?.addEventListener("click", () => {
+    setNavOpen(!header?.classList.contains("nav-open"));
+  });
+
+  nav?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => setNavOpen(false));
+  });
+
+  window.matchMedia("(min-width: 768px)").addEventListener("change", (event) => {
+    if (event.matches) setNavOpen(false);
+  });
+</script>
 
 <style is:global>
   @import "../styles/global.css";
