@@ -24,6 +24,7 @@
 html {
   font-size: 18px;
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
@@ -97,11 +98,47 @@ img {
   max-width: 960px;
   margin: 0 auto;
   padding: 0 1.25rem;
-  height: var(--nav-height);
+  min-height: var(--nav-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+}
+
+.nav-toggle {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 1px solid rgba(158, 179, 201, 0.25);
+  border-radius: 4px;
+  background: rgba(10, 22, 40, 0.6);
+  cursor: pointer;
+}
+
+.nav-toggle-bar {
+  display: block;
+  width: 1.15rem;
+  height: 2px;
+  margin: 0 auto;
+  background: var(--cloud);
+  border-radius: 1px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.site-header.nav-open .nav-toggle-bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.site-header.nav-open .nav-toggle-bar:nth-child(2) {
+  opacity: 0;
+}
+
+.site-header.nav-open .nav-toggle-bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 .logo {
@@ -1268,4 +1305,99 @@ li {
 
 .footer-admin-link a:hover {
   color: var(--runway-amber);
+}
+
+/* Mobile */
+
+@media (max-width: 767px) {
+  html {
+    font-size: 16px;
+  }
+
+  .nav-toggle {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .nav-inner {
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+  }
+
+  #site-nav {
+    display: none;
+    width: 100%;
+    order: 3;
+    padding-top: 0.35rem;
+  }
+
+  .site-header.nav-open #site-nav {
+    display: block;
+  }
+
+  nav ul {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  nav li {
+    border-top: 1px solid rgba(158, 179, 201, 0.12);
+  }
+
+  nav a {
+    display: block;
+    padding: 0.85rem 0;
+    font-size: 0.8rem;
+  }
+
+  .page {
+    padding: 1.75rem 1rem 3rem;
+  }
+
+  .hero {
+    padding: 1.25rem 0 1.75rem;
+  }
+
+  .hero-compact h1 {
+    font-size: 1.65rem;
+  }
+
+  .weather-station-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .weather-dashboard-link {
+    align-self: flex-start;
+  }
+
+  .event-card-body {
+    padding: 1rem 1.1rem;
+  }
+
+  .event-date-rail {
+    flex-basis: 4.25rem;
+    padding: 1rem 0.5rem;
+  }
+
+  .admin-tabs {
+    flex-wrap: wrap;
+  }
+
+  .admin-tab {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.72rem;
+  }
+
+  .admin-review-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .form-submit {
+    width: 100%;
+    text-align: center;
+  }
 }
