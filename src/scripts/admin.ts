@@ -1,4 +1,4 @@
-import { getSupabase, type EventSubmission, type FlyoutSubmission, type PilotSubmission } from "../lib/supabase";
+import { getSupabase, type EventPhoto, type EventRsvp, type EventSubmission, type FlyoutSubmission, type PilotSubmission } from "../lib/supabase";
 import { formatEventTime, parseEventTimeForInput } from "../lib/event-time";
 
 const loginSection = document.getElementById("admin-login");
@@ -15,8 +15,14 @@ const pilotLiveEmpty = document.getElementById("pilot-live-empty");
 
 const eventPendingList = document.getElementById("event-pending-list");
 const eventPendingEmpty = document.getElementById("event-pending-empty");
+const eventRsvpPendingList = document.getElementById("event-rsvp-pending-list");
+const eventRsvpPendingEmpty = document.getElementById("event-rsvp-pending-empty");
+const eventPhotoPendingList = document.getElementById("event-photo-pending-list");
+const eventPhotoPendingEmpty = document.getElementById("event-photo-pending-empty");
 const eventLiveList = document.getElementById("event-live-list");
 const eventLiveEmpty = document.getElementById("event-live-empty");
+
+let eventTitleById = new Map<string, string>();
 
 const flyoutPendingList = document.getElementById("flyout-pending-list");
 const flyoutPendingEmpty = document.getElementById("flyout-pending-empty");
@@ -211,6 +217,49 @@ function renderEventLive(submission: EventSubmission) {
   `;
 }
 
+function renderEventRsvpPending(rsvp: EventRsvp) {
+  const eventTitle = eventTitleById.get(rsvp.event_id) ?? "Unknown event";
+  return `
+    <article class="admin-card" data-id="${rsvp.id}" data-kind="event-rsvp">
+      <div class="admin-card-header">
+        <h3>${escapeHtml(rsvp.name)}</h3>
+        <time>${formatDate(rsvp.created_at)}</time>
+      </div>
+      <p class="admin-meta"><strong>Event:</strong> ${escapeHtml(eventTitle)}</p>
+      <p class="admin-meta"><strong>Email:</strong> ${escapeHtml(rsvp.email)}</p>
+      <p class="admin-meta"><strong>Guests:</strong> ${rsvp.guests}</p>
+      ${rsvp.note ? `<p class="admin-bio">${escapeHtml(rsvp.note)}</p>` : ""}
+      <div class="admin-actions">
+        <button type="button" class="form-submit admin-approve" data-action="approved">Approve</button>
+        <button type="button" class="admin-reject" data-action="rejected">Reject</button>
+      </div>
+    </article>
+  `;
+}
+
+function renderEventPhotoPending(photo: EventPhoto) {
+  const eventTitle = eventTitleById.get(photo.event_id) ?? "Unknown event";
+  return `
+    <article class="admin-card" data-id="${photo.id}" data-kind="event-photo">
+      <div class="admin-card-header">
+        <h3>${escapeHtml(photo.submitter_name)}</h3>
+        <time>${formatDate(photo.created_at)}</time>
+      </div>
+      <p class="admin-meta"><strong>Event:</strong> ${escapeHtml(eventTitle)}</p>
+      <p class="admin-meta"><strong>Email:</strong> ${escapeHtml(photo.submitter_email)}</p>
+      ${photo.caption ? `<p class="admin-bio">${escapeHtml(photo.caption)}</p>` : ""}
+      <p class="admin-meta">
+        <a class="admin-photo-link" href="${escapeHtml(photo.photo_url)}" target="_blank" rel="noopener">View photo</a>
+      </p>
+      <img class="admin-event-photo-preview" src="${escapeHtml(photo.photo_url)}" alt="Submitted event photo" loading="lazy" />
+      <div class="admin-actions">
+        <button type="button" class="form-submit admin-approve" data-action="approved">Approve</button>
+        <button type="button" class="admin-reject" data-action="rejected">Reject</button>
+      </div>
+    </article>
+  `;
+}
+
 function renderFlyoutPending(submission: FlyoutSubmission) {
   return `
     <article class="admin-card" data-id="${submission.id}" data-kind="flyout">
@@ -316,6 +365,21 @@ async function loadPilotLive() {
   pilotLiveList.innerHTML = data.map(renderPilotLive).join("");
 }
 
+async function refreshEventTitles() {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("event_submissions")
+    .select("id, title")
+    .eq("status", "approved");
+
+  if (error) {
+    showMessage(error.message);
+    return;
+  }
+
+  eventTitleById = new Map((data ?? []).map((event) => [event.id, event.title]));
+}
+
 async function loadEventPending() {
   if (!eventPendingList) return;
 
@@ -364,6 +428,60 @@ async function loadEventLive() {
 
   if (eventLiveEmpty) eventLiveEmpty.hidden = true;
   eventLiveList.innerHTML = data.map(renderEventLive).join("");
+}
+
+async function loadEventRsvpPending() {
+  if (!eventRsvpPendingList) return;
+
+  await refreshEventTitles();
+
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("event_rsvps")
+    .select("*")
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    showMessage(error.message);
+    return;
+  }
+
+  if (!data?.length) {
+    eventRsvpPendingList.innerHTML = "";
+    if (eventRsvpPendingEmpty) eventRsvpPendingEmpty.hidden = false;
+    return;
+  }
+
+  if (eventRsvpPendingEmpty) eventRsvpPendingEmpty.hidden = true;
+  eventRsvpPendingList.innerHTML = data.map(renderEventRsvpPending).join("");
+}
+
+async function loadEventPhotoPending() {
+  if (!eventPhotoPendingList) return;
+
+  await refreshEventTitles();
+
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("event_photos")
+    .select("*")
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    showMessage(error.message);
+    return;
+  }
+
+  if (!data?.length) {
+    eventPhotoPendingList.innerHTML = "";
+    if (eventPhotoPendingEmpty) eventPhotoPendingEmpty.hidden = false;
+    return;
+  }
+
+  if (eventPhotoPendingEmpty) eventPhotoPendingEmpty.hidden = true;
+  eventPhotoPendingList.innerHTML = data.map(renderEventPhotoPending).join("");
 }
 
 async function loadFlyoutPending() {
@@ -424,6 +542,8 @@ async function showDashboard() {
     loadPilotPending(),
     loadPilotLive(),
     loadEventPending(),
+    loadEventRsvpPending(),
+    loadEventPhotoPending(),
     loadEventLive(),
     loadFlyoutPending(),
     loadFlyoutLive(),
@@ -448,6 +568,24 @@ async function updateEventStatus(id: string, status: "approved" | "rejected") {
   const supabase = getSupabase();
   const { error } = await supabase
     .from("event_submissions")
+    .update({ status, reviewed_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+async function updateEventRsvpStatus(id: string, status: "approved" | "rejected") {
+  const supabase = getSupabase();
+  const { error } = await supabase
+    .from("event_rsvps")
+    .update({ status, reviewed_at: new Date().toISOString() })
+    .eq("id", id);
+  if (error) throw error;
+}
+
+async function updateEventPhotoStatus(id: string, status: "approved" | "rejected") {
+  const supabase = getSupabase();
+  const { error } = await supabase
+    .from("event_photos")
     .update({ status, reviewed_at: new Date().toISOString() })
     .eq("id", id);
   if (error) throw error;
@@ -538,11 +676,36 @@ document.addEventListener("click", async (event) => {
       if (eventPendingList?.children.length === 0 && eventPendingEmpty) {
         eventPendingEmpty.hidden = false;
       }
-      if (status === "approved") await loadEventLive();
+      if (status === "approved") {
+        await loadEventLive();
+        await refreshEventTitles();
+      }
       showMessage(
         status === "approved"
           ? "Approved — event is now live on the Events page."
           : "Rejected — event submission removed from the pending queue.",
+      );
+    } else if (kind === "event-rsvp") {
+      await updateEventRsvpStatus(id, status);
+      card.remove();
+      if (eventRsvpPendingList?.children.length === 0 && eventRsvpPendingEmpty) {
+        eventRsvpPendingEmpty.hidden = false;
+      }
+      showMessage(
+        status === "approved"
+          ? "Approved — RSVP is now counted on the Events page."
+          : "Rejected — RSVP removed from the pending queue.",
+      );
+    } else if (kind === "event-photo") {
+      await updateEventPhotoStatus(id, status);
+      card.remove();
+      if (eventPhotoPendingList?.children.length === 0 && eventPhotoPendingEmpty) {
+        eventPhotoPendingEmpty.hidden = false;
+      }
+      showMessage(
+        status === "approved"
+          ? "Approved — photo is now live on the Events page."
+          : "Rejected — photo removed from the pending queue.",
       );
     } else {
       await updateFlyoutStatus(id, status);

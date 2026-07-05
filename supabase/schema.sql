@@ -152,3 +152,117 @@ create policy "Admin can update flyout submissions"
   to authenticated
   using (true)
   with check (status in ('pending', 'approved', 'rejected'));
+
+-- Event RSVPs and photos (see event-rsvps-photos.sql for full migration on existing projects)
+create table if not exists public.event_rsvps (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  event_id uuid not null references public.event_submissions(id) on delete cascade,
+  name text not null,
+  email text not null,
+  guests integer not null default 1 check (guests >= 1 and guests <= 20),
+  note text,
+  status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
+  reviewed_at timestamptz
+);
+
+alter table public.event_rsvps enable row level security;
+
+create policy "Public can submit event RSVPs"
+  on public.event_rsvps
+  for insert
+  to anon, authenticated
+  with check (status = 'pending');
+
+create policy "Admin can read all event RSVPs"
+  on public.event_rsvps
+  for select
+  to authenticated
+  using (true);
+
+create policy "Admin can update event RSVPs"
+  on public.event_rsvps
+  for update
+  to authenticated
+  using (true)
+  with check (status in ('pending', 'approved', 'rejected'));
+
+create table if not exists public.event_photos (
+  id uuid primary key default gen_random_uuid(),
+  created_at timestamptz not null default now(),
+  event_id uuid not null references public.event_submissions(id) on delete cascade,
+  submitter_name text not null,
+  submitter_email text not null,
+  photo_url text not null,
+  caption text,
+  status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
+  reviewed_at timestamptz
+);
+
+alter table public.event_photos enable row level security;
+
+create policy "Public can submit event photos"
+  on public.event_photos
+  for insert
+  to anon, authenticated
+  with check (status = 'pending');
+
+create policy "Public can read approved event photos"
+  on public.event_photos
+  for select
+  to anon, authenticated
+  using (status = 'approved');
+
+create policy "Admin can read all event photos"
+  on public.event_photos
+  for select
+  to authenticated
+  using (true);
+
+create policy "Admin can update event photos"
+  on public.event_photos
+  for update
+  to authenticated
+  using (true)
+  with check (status in ('pending', 'approved', 'rejected'));
+
+create or replace function public.approved_event_rsvp_counts()
+returns table(event_id uuid, rsvp_count bigint)
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select event_id, count(*)::bigint
+  from public.event_rsvps
+  where status = 'approved'
+  group by event_id;
+$$;
+
+revoke all on function public.approved_event_rsvp_counts() from public;
+grant execute on function public.approved_event_rsvp_counts() to anon, authenticated;
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'event-photos',
+  'event-photos',
+  true,
+  5242880,
+  array['image/jpeg', 'image/png', 'image/webp']
+)
+on conflict (id) do update set
+  public = excluded.public,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
+
+create policy "Anyone can upload event photos"
+  on storage.objects
+  for insert
+  to anon, authenticated
+  with check (bucket_id = 'event-photos');
+
+create policy "Public can view event photos"
+  on storage.objects
+  for select
+  to anon, authenticated
+  using (bucket_id = 'event-photos');

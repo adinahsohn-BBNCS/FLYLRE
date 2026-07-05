@@ -38,6 +38,30 @@ export type FlyoutSubmission = {
   reviewed_at: string | null;
 };
 
+export type EventRsvp = {
+  id: string;
+  created_at: string;
+  event_id: string;
+  name: string;
+  email: string;
+  guests: number;
+  note: string | null;
+  status: "pending" | "approved" | "rejected";
+  reviewed_at: string | null;
+};
+
+export type EventPhoto = {
+  id: string;
+  created_at: string;
+  event_id: string;
+  submitter_name: string;
+  submitter_email: string;
+  photo_url: string;
+  caption: string | null;
+  status: "pending" | "approved" | "rejected";
+  reviewed_at: string | null;
+};
+
 let client: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient {
