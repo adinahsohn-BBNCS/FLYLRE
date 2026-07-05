@@ -1,5 +1,5 @@
 import { getSupabase, type EventPhoto, type EventSubmission } from "../lib/supabase";
-import { formatEventTime } from "../lib/event-time";
+import { formatEventTime, isEventPast } from "../lib/event-time";
 
 const upcomingList = document.getElementById("event-list-upcoming");
 const pastList = document.getElementById("event-list-past");
@@ -19,14 +19,6 @@ function escapeHtml(value: string) {
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;");
-}
-
-function todayDateString() {
-  const now = new Date();
-  const y = now.getFullYear();
-  const m = String(now.getMonth() + 1).padStart(2, "0");
-  const d = String(now.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
 }
 
 function formatDateRail(dateStr: string) {
@@ -188,9 +180,8 @@ function renderEvent(event: EventSubmission, isPast = false) {
 }
 
 function renderEventLists(events: EventSubmission[]) {
-  const today = todayDateString();
-  const upcoming = events.filter((event) => event.event_date >= today);
-  const past = events.filter((event) => event.event_date < today).reverse();
+  const upcoming = events.filter((event) => !isEventPast(event));
+  const past = events.filter((event) => isEventPast(event)).reverse();
 
   if (!upcoming.length) {
     if (upcomingEmpty) upcomingEmpty.hidden = false;
