@@ -242,6 +242,22 @@ $$;
 revoke all on function public.approved_event_rsvp_counts() from public;
 grant execute on function public.approved_event_rsvp_counts() to anon, authenticated;
 
+create or replace function public.approved_event_rsvps_public()
+returns table(event_id uuid, name text, guests integer)
+language sql
+security definer
+stable
+set search_path = public
+as $$
+  select event_id, name, guests
+  from public.event_rsvps
+  where status = 'approved'
+  order by created_at asc;
+$$;
+
+revoke all on function public.approved_event_rsvps_public() from public;
+grant execute on function public.approved_event_rsvps_public() to anon, authenticated;
+
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'event-photos',

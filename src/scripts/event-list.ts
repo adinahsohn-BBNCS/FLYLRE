@@ -8,10 +8,10 @@ const pastEmpty = document.getElementById("event-list-past-empty");
 const pastSection = document.getElementById("event-past-section");
 const loadingEl = document.getElementById("event-list-loading");
 
-type RsvpCountRow = { event_id: string; rsvp_count: number };
+type PublicRsvpRow = { event_id: string; name: string; guests: number };
 
 let photosByEvent = new Map<string, EventPhoto[]>();
-let rsvpCounts = new Map<string, number>();
+let rsvpsByEvent = new Map<string, PublicRsvpRow[]>();
 
 function escapeHtml(value: string) {
   return value
@@ -36,11 +36,29 @@ function formatDateRail(dateStr: string) {
   };
 }
 
-function rsvpCountLabel(eventId: string) {
-  const count = rsvpCounts.get(eventId) ?? 0;
-  if (count === 0) return "No confirmed RSVPs yet.";
-  if (count === 1) return "1 confirmed RSVP.";
-  return `${count} confirmed RSVPs.`;
+function renderRsvpList(eventId: string) {
+  const rsvps = rsvpsByEvent.get(eventId) ?? [];
+  if (!rsvps.length) {
+    return `<p class="event-rsvp-empty">No confirmed RSVPs yet.</p>`;
+  }
+
+  const totalGuests = rsvps.reduce((sum, rsvp) => sum + rsvp.guests, 0);
+  const rsvpWord = rsvps.length === 1 ? "RSVP" : "RSVPs";
+  const guestWord = totalGuests === 1 ? "guest" : "guests";
+
+  return `
+    <div class="event-rsvp-list-wrap">
+      <p class="event-rsvp-summary">${rsvps.length} ${rsvpWord} · ${totalGuests} ${guestWord} total</p>
+      <ul class="event-rsvp-list">
+        ${rsvps
+          .map((rsvp) => {
+            const guestsLabel = rsvp.guests === 1 ? "1 guest" : `${rsvp.guests} guests`;
+            return `<li><span class="event-rsvp-name">${escapeHtml(rsvp.name)}</span> <span class="event-rsvp-guests">${guestsLabel}</span></li>`;
+          })
+          .join("")}
+      </ul>
+    </div>
+  `;
 }
 
 function renderPhotoGallery(eventId: string) {
@@ -71,8 +89,8 @@ function renderRsvpSection(event: EventSubmission) {
   return `
     <div class="event-engage event-rsvp">
       <h4>RSVP</h4>
-      <p class="event-rsvp-count">${escapeHtml(rsvpCountLabel(event.id))}</p>
-      <p class="form-note">Let us know you're coming. RSVPs appear after admin approval.</p>
+      ${renderRsvpList(event.id)}
+      <p class="form-note">Let us know you're coming. Your name appears in the guest list after admin approval.</p>
       <p class="form-error event-rsvp-error" hidden></p>
       <form class="event-rsvp-form" data-event-id="${escapeHtml(event.id)}">
         <div class="form-honey" aria-hidden="true">
@@ -98,13 +116,15 @@ function renderRsvpSection(event: EventSubmission) {
         <button type="submit" class="form-submit">Submit RSVP</button>
       </form>
       <div class="form-success event-rsvp-success" hidden>
-        <p><strong>RSVP received.</strong> It will show in the count after admin approval.</p>
+        <p><strong>RSVP received.</strong> You'll appear in the guest list after admin approval.</p>
       </div>
     </div>
   `;
 }
 
-function renderPhotoSection(event: EventSubmission) {
+function renderPhotoSection(event: EventSubmission, isPast: boolean) {
+  if (!isPast) return "";
+
   return `
     <div class="event-engage event-photos">
       <h4>Event photos</h4>
@@ -151,7 +171,7 @@ function renderEvent(event: EventSubmission, isPast = false) {
     : "";
 
   const rsvpBlock = isPast ? "" : renderRsvpSection(event);
-  const photoBlock = renderPhotoSection(event);
+  const photoBlock = renderPhotoSection(event, isPast);
 
   return `
     <article class="event-card${isPast ? " event-card--past" : ""}" id="event-${escapeHtml(event.id)}" data-event-id="${escapeHtml(event.id)}" data-event-date="${escapeHtml(event.event_date)}">
@@ -314,6 +334,10 @@ async function handlePhotoSubmit(form: HTMLFormElement) {
   }
 
   try {
+    if (!card?.classList.contains("event-card--past")) {
+      throw new Error("Photos can be shared after the event has passed.");
+    }
+
     const data = new FormData(form);
     if (String(data.get("website") ?? "").trim()) return;
 
@@ -393,7 +417,7 @@ async function loadEvents() {
   try {
     const supabase = getSupabase();
 
-    const [eventsResult, photosResult, countsResult] = await Promise.all([
+    const [eventsResult, photosResult, rsvpsResult] = await Promise.all([
       supabase
         .from("event_submissions")
         .select("*")
@@ -402,7 +426,7 @@ async function loadEvents() {
       supabase.from("event_photos").select("*").eq("status", "approved").order("created_at", {
         ascending: false,
       }),
-      supabase.rpc("approved_event_rsvp_counts"),
+      supabase.rpc("approved_event_rsvps_public"),
     ]);
 
     if (eventsResult.error) throw eventsResult.error;
@@ -414,9 +438,11 @@ async function loadEvents() {
       photosByEvent.set(photo.event_id, list);
     }
 
-    rsvpCounts = new Map();
-    for (const row of (countsResult.data ?? []) as RsvpCountRow[]) {
-      rsvpCounts.set(row.event_id, Number(row.rsvp_count));
+    rsvpsByEvent = new Map();
+    for (const row of (rsvpsResult.data ?? []) as PublicRsvpRow[]) {
+      const list = rsvpsByEvent.get(row.event_id) ?? [];
+      list.push(row);
+      rsvpsByEvent.set(row.event_id, list);
     }
 
     if (loadingEl) loadingEl.hidden = true;
