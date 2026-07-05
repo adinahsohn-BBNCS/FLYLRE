@@ -10,7 +10,8 @@ const loadingEl = document.getElementById("event-list-loading");
 
 type PublicRsvpRow = { event_id: string; name: string; guests: number };
 
-let photosByEvent = new Map<string, EventPhoto[]>();
+const MAX_EVENT_PHOTOS_PER_SUBMISSION = 10;
+const MAX_EVENT_PHOTO_BYTES = 5 * 1024 * 1024;
 let rsvpsByEvent = new Map<string, PublicRsvpRow[]>();
 
 function escapeHtml(value: string) {
@@ -129,7 +130,7 @@ function renderPhotoSection(event: EventSubmission, isPast: boolean) {
     <div class="event-engage event-photos">
       <h4>Event photos</h4>
       ${renderPhotoGallery(event.id)}
-      <p class="form-note">Share a photo you took at this event. Photos appear after admin approval.</p>
+      <p class="form-note">Share photos you took at this event. Up to ${MAX_EVENT_PHOTOS_PER_SUBMISSION} per submission — they appear after admin approval.</p>
       <p class="form-error event-photo-error" hidden></p>
       <form class="event-photo-form" data-event-id="${escapeHtml(event.id)}">
         <div class="form-honey" aria-hidden="true">
@@ -145,18 +146,26 @@ function renderPhotoSection(event: EventSubmission, isPast: boolean) {
           <input id="photo-email-${escapeHtml(event.id)}" name="email" type="email" required autocomplete="email" />
         </div>
         <div class="form-field">
-          <label for="photo-file-${escapeHtml(event.id)}">Photo</label>
-          <input id="photo-file-${escapeHtml(event.id)}" name="photo" type="file" accept="image/jpeg,image/png,image/webp" required />
-          <p class="form-hint">JPEG, PNG, or WebP · 5 MB max</p>
+          <label for="photo-files-${escapeHtml(event.id)}">Photos</label>
+          <input
+            id="photo-files-${escapeHtml(event.id)}"
+            name="photos"
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            required
+          />
+          <p class="form-hint">Up to ${MAX_EVENT_PHOTOS_PER_SUBMISSION} photos · JPEG, PNG, or WebP · 5 MB each</p>
         </div>
         <div class="form-field">
           <label for="photo-caption-${escapeHtml(event.id)}">Caption <span class="form-optional">(optional)</span></label>
           <input id="photo-caption-${escapeHtml(event.id)}" name="caption" type="text" maxlength="200" />
+          <p class="form-hint">Applies to all photos in this submission.</p>
         </div>
-        <button type="submit" class="form-submit">Submit photo</button>
+        <button type="submit" class="form-submit">Submit photos</button>
       </form>
       <div class="form-success event-photo-success" hidden>
-        <p><strong>Photo received.</strong> It will appear here after admin approval.</p>
+        <p><strong>Photos received.</strong> They will appear here after admin approval.</p>
       </div>
     </div>
   `;
@@ -322,6 +331,7 @@ async function handlePhotoSubmit(form: HTMLFormElement) {
   const errorEl = card?.querySelector(".event-photo-error") as HTMLElement | null;
   const successEl = card?.querySelector(".event-photo-success") as HTMLElement | null;
   const submitBtn = form.querySelector('button[type="submit"]') as HTMLButtonElement | null;
+  const fileInput = form.querySelector('input[type="file"]') as HTMLInputElement | null;
 
   if (errorEl) {
     errorEl.hidden = true;
@@ -344,44 +354,67 @@ async function handlePhotoSubmit(form: HTMLFormElement) {
     const name = String(data.get("name") ?? "").trim();
     const email = String(data.get("email") ?? "").trim();
     const caption = String(data.get("caption") ?? "").trim();
-    const photo = data.get("photo");
+    const photos = (fileInput?.files ? Array.from(fileInput.files) : []).filter(
+      (file) => file.size > 0,
+    );
 
     if (!name || !email) throw new Error("Please fill in your name and email.");
-    if (!(photo instanceof File) || photo.size === 0) throw new Error("Please choose a photo.");
-    if (photo.size > 5 * 1024 * 1024) throw new Error("Photo must be 5 MB or smaller.");
+    if (!photos.length) throw new Error("Please choose at least one photo.");
+    if (photos.length > MAX_EVENT_PHOTOS_PER_SUBMISSION) {
+      throw new Error(`You can submit up to ${MAX_EVENT_PHOTOS_PER_SUBMISSION} photos at a time.`);
+    }
+
+    for (const photo of photos) {
+      if (photo.size > MAX_EVENT_PHOTO_BYTES) {
+        throw new Error(`Each photo must be 5 MB or smaller (${photo.name} is too large).`);
+      }
+    }
 
     const supabase = getSupabase();
-    const ext = photo.name.split(".").pop()?.toLowerCase() ?? "jpg";
-    const path = `${eventId}/${crypto.randomUUID()}.${ext}`;
+    const rows: {
+      event_id: string;
+      submitter_name: string;
+      submitter_email: string;
+      photo_url: string;
+      caption: string | null;
+      status: "pending";
+    }[] = [];
 
-    const { error: uploadError } = await supabase.storage
-      .from("event-photos")
-      .upload(path, photo, { upsert: false, contentType: photo.type });
+    for (const photo of photos) {
+      const ext = photo.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const path = `${eventId}/${crypto.randomUUID()}.${ext}`;
 
-    if (uploadError) throw uploadError;
+      const { error: uploadError } = await supabase.storage
+        .from("event-photos")
+        .upload(path, photo, { upsert: false, contentType: photo.type });
 
-    const { data: publicUrl } = supabase.storage.from("event-photos").getPublicUrl(path);
+      if (uploadError) throw uploadError;
 
-    const { error: insertError } = await supabase.from("event_photos").insert({
-      event_id: eventId,
-      submitter_name: name,
-      submitter_email: email,
-      photo_url: publicUrl.publicUrl,
-      caption: caption || null,
-      status: "pending",
-    });
+      const { data: publicUrl } = supabase.storage.from("event-photos").getPublicUrl(path);
 
+      rows.push({
+        event_id: eventId,
+        submitter_name: name,
+        submitter_email: email,
+        photo_url: publicUrl.publicUrl,
+        caption: caption || null,
+        status: "pending",
+      });
+    }
+
+    const { error: insertError } = await supabase.from("event_photos").insert(rows);
     if (insertError) throw insertError;
 
     const eventTitle =
       card?.querySelector(".event-card-body h3")?.textContent?.trim() ?? "Event";
 
-    await notifyAdmin("Fly LRE - New event photo to review", {
+    await notifyAdmin("Fly LRE - New event photos to review", {
       event: eventTitle,
       name,
       email,
       caption: caption || "—",
-      photo: publicUrl.publicUrl,
+      photos: String(photos.length),
+      links: rows.map((row) => row.photo_url).join("\n"),
     });
 
     form.hidden = true;
@@ -395,7 +428,7 @@ async function handlePhotoSubmit(form: HTMLFormElement) {
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
-      submitBtn.textContent = "Submit photo";
+      submitBtn.textContent = "Submit photos";
     }
   }
 }
