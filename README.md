@@ -43,6 +43,8 @@ Before deploying, run `npm run build` with `.env` present so Supabase keys are i
 
 Same approval workflow as pilot profiles. If your database was set up before Events was added, run `supabase/events.sql` once in the SQL Editor.
 
+For event **RSVPs** and **photo uploads**, run `supabase/event-rsvps-photos.sql` once in the SQL Editor. Approved RSVPs update the public guest count; approved photos appear in each event’s gallery. Review both under **Admin → Events**.
+
 ## Development
 
 Requires [Node.js](https://nodejs.org/) (LTS recommended).
