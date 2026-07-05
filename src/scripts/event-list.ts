@@ -12,6 +12,8 @@ type PublicRsvpRow = { event_id: string; name: string; guests: number };
 
 const MAX_EVENT_PHOTOS_PER_SUBMISSION = 10;
 const MAX_EVENT_PHOTO_BYTES = 5 * 1024 * 1024;
+
+let photosByEvent = new Map<string, EventPhoto[]>();
 let rsvpsByEvent = new Map<string, PublicRsvpRow[]>();
 
 function escapeHtml(value: string) {
@@ -465,17 +467,21 @@ async function loadEvents() {
     if (eventsResult.error) throw eventsResult.error;
 
     photosByEvent = new Map();
-    for (const photo of (photosResult.data ?? []) as EventPhoto[]) {
-      const list = photosByEvent.get(photo.event_id) ?? [];
-      list.push(photo);
-      photosByEvent.set(photo.event_id, list);
+    if (!photosResult.error) {
+      for (const photo of (photosResult.data ?? []) as EventPhoto[]) {
+        const list = photosByEvent.get(photo.event_id) ?? [];
+        list.push(photo);
+        photosByEvent.set(photo.event_id, list);
+      }
     }
 
     rsvpsByEvent = new Map();
-    for (const row of (rsvpsResult.data ?? []) as PublicRsvpRow[]) {
-      const list = rsvpsByEvent.get(row.event_id) ?? [];
-      list.push(row);
-      rsvpsByEvent.set(row.event_id, list);
+    if (!rsvpsResult.error) {
+      for (const row of (rsvpsResult.data ?? []) as PublicRsvpRow[]) {
+        const list = rsvpsByEvent.get(row.event_id) ?? [];
+        list.push(row);
+        rsvpsByEvent.set(row.event_id, list);
+      }
     }
 
     if (loadingEl) loadingEl.hidden = true;
