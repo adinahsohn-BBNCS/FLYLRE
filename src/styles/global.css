@@ -750,6 +750,48 @@ li {
   color: var(--runway-amber);
 }
 
+.event-rsvp-summary,
+.event-rsvp-empty {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  color: var(--cloud-muted);
+}
+
+.event-rsvp-list {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+  border: 1px solid rgba(158, 179, 201, 0.12);
+  border-radius: 4px;
+  background: rgba(10, 22, 40, 0.35);
+}
+
+.event-rsvp-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  padding: 0.65rem 0.85rem;
+  border-top: 1px solid rgba(158, 179, 201, 0.1);
+}
+
+.event-rsvp-list li:first-child {
+  border-top: none;
+}
+
+.event-rsvp-name {
+  color: var(--cloud);
+  font-weight: 600;
+}
+
+.event-rsvp-guests {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  color: var(--runway-amber);
+}
+
 .event-rsvp-count,
 .event-photos-empty {
   margin: 0 0 0.75rem;
