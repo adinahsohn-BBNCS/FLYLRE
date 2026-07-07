@@ -1,5 +1,5 @@
 -- Run in Supabase SQL Editor if airport_notam already exists.
--- NOTAM appears automatically at closes_at; opens_at is informational only (admin turns off manually).
+-- NOTAM appears automatically at closes_at (client + this RPC); opens_at is informational only.
 
 create or replace function public.public_airport_notam()
 returns table (
@@ -8,7 +8,7 @@ returns table (
   opens_at timestamptz
 )
 language sql
-stable
+volatile
 security definer
 set search_path = public
 as $$
@@ -16,7 +16,7 @@ as $$
   from public.airport_notam
   where id = 1
     and is_active = true
-    and (closes_at is null or closes_at <= now());
+    and (closes_at is null or closes_at <= clock_timestamp());
 $$;
 
 revoke all on function public.public_airport_notam() from public;

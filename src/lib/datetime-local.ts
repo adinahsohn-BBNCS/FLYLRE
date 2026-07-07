@@ -13,13 +13,23 @@ export function toDatetimeLocalValue(iso: string | null | undefined): string {
   return `${y}-${m}-${d}T${h}:${min}`;
 }
 
-/** Parse `<input type="datetime-local">` value to ISO, or null if empty. */
+/** Parse `<input type="datetime-local">` value as local time → ISO UTC. */
 export function fromDatetimeLocalValue(value: string | null | undefined): string | null {
   const trimmed = value?.trim();
   if (!trimmed) return null;
 
-  const date = new Date(trimmed);
+  const match = trimmed.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const hours = Number(match[4]);
+  const minutes = Number(match[5]);
+
+  const date = new Date(year, month - 1, day, hours, minutes, 0, 0);
   if (Number.isNaN(date.getTime())) return null;
+
   return date.toISOString();
 }
 
