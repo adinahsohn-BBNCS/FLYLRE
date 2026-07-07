@@ -309,7 +309,7 @@ returns table (
   opens_at timestamptz
 )
 language sql
-stable
+volatile
 security definer
 set search_path = public
 as $$
@@ -317,7 +317,7 @@ as $$
   from public.airport_notam
   where id = 1
     and is_active = true
-    and (closes_at is null or closes_at <= now());
+    and (closes_at is null or closes_at <= clock_timestamp());
 $$;
 
 revoke all on function public.public_airport_notam() from public;
