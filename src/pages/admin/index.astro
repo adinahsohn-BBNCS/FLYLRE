@@ -44,7 +44,59 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       </div>
       <p id="admin-review-message" class="form-note" hidden></p>
 
-      <section class="admin-notam-section">
+      <div class="admin-tabs" role="tablist" aria-label="Admin sections">
+        <button
+          type="button"
+          class="admin-tab admin-tab-active"
+          role="tab"
+          id="admin-tab-notams"
+          aria-controls="admin-panel-notams"
+          aria-selected="true"
+          data-tab="notams"
+        >
+          Notams
+        </button>
+        <button
+          type="button"
+          class="admin-tab"
+          role="tab"
+          id="admin-tab-pilots"
+          aria-controls="admin-panel-pilots"
+          aria-selected="false"
+          data-tab="pilots"
+        >
+          Planes
+        </button>
+        <button
+          type="button"
+          class="admin-tab"
+          role="tab"
+          id="admin-tab-events"
+          aria-controls="admin-panel-events"
+          aria-selected="false"
+          data-tab="events"
+        >
+          Events
+        </button>
+        <button
+          type="button"
+          class="admin-tab"
+          role="tab"
+          id="admin-tab-flyouts"
+          aria-controls="admin-panel-flyouts"
+          aria-selected="false"
+          data-tab="flyouts"
+        >
+          Fly-outs
+        </button>
+      </div>
+
+      <div
+        id="admin-panel-notams"
+        class="admin-panel"
+        role="tabpanel"
+        aria-labelledby="admin-tab-notams"
+      >
         <h3 class="admin-section-title">Airport NOTAM — Home page</h3>
         <p class="admin-section-help">
           The notice appears automatically at <strong>Closed from</strong> and stays on after
@@ -82,45 +134,9 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           </div>
           <button id="admin-notam-submit" type="submit" class="form-submit">Save NOTAM</button>
         </form>
-      </section>
-
-      <div class="admin-tabs" role="tablist" aria-label="Admin sections">
-        <button
-          type="button"
-          class="admin-tab"
-          role="tab"
-          id="admin-tab-pilots"
-          aria-controls="admin-panel-pilots"
-          aria-selected="true"
-          data-tab="pilots"
-        >
-          Planes
-        </button>
-        <button
-          type="button"
-          class="admin-tab"
-          role="tab"
-          id="admin-tab-events"
-          aria-controls="admin-panel-events"
-          aria-selected="false"
-          data-tab="events"
-        >
-          Events
-        </button>
-        <button
-          type="button"
-          class="admin-tab"
-          role="tab"
-          id="admin-tab-flyouts"
-          aria-controls="admin-panel-flyouts"
-          aria-selected="false"
-          data-tab="flyouts"
-        >
-          Fly-outs
-        </button>
       </div>
 
-      <div id="admin-panel-pilots" class="admin-panel" role="tabpanel" aria-labelledby="admin-tab-pilots">
+      <div id="admin-panel-pilots" class="admin-panel" role="tabpanel" aria-labelledby="admin-tab-pilots" hidden>
         <h3 class="admin-section-title">Pending pilot submissions</h3>
         <p id="pilot-pending-empty" class="pilot-placeholder" hidden>No pending submissions.</p>
         <div id="pilot-pending-list" class="admin-list" data-area="pilots-pending"></div>
