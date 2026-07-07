@@ -1,4 +1,6 @@
-import { getSupabase, type EventPhoto, type EventRsvp, type EventSubmission, type FlyoutSubmission, type PilotSubmission } from "../lib/supabase";
+import { fromDatetimeLocalValue, formatNotamDateTime, toDatetimeLocalValue } from "../lib/datetime-local";
+import { isAirportNotamLive, isAirportNotamScheduled } from "../lib/airport-notam";
+import { getSupabase, type AirportNotam, type EventPhoto, type EventRsvp, type EventSubmission, type FlyoutSubmission, type PilotSubmission } from "../lib/supabase";
 import { formatEventTime, parseEventTimeForInput } from "../lib/event-time";
 
 const loginSection = document.getElementById("admin-login");
@@ -28,6 +30,14 @@ const flyoutPendingList = document.getElementById("flyout-pending-list");
 const flyoutPendingEmpty = document.getElementById("flyout-pending-empty");
 const flyoutLiveList = document.getElementById("flyout-live-list");
 const flyoutLiveEmpty = document.getElementById("flyout-live-empty");
+
+const notamForm = document.getElementById("admin-notam-form") as HTMLFormElement | null;
+const notamActive = document.getElementById("admin-notam-active") as HTMLInputElement | null;
+const notamReason = document.getElementById("admin-notam-reason") as HTMLTextAreaElement | null;
+const notamCloses = document.getElementById("admin-notam-closes") as HTMLInputElement | null;
+const notamOpens = document.getElementById("admin-notam-opens") as HTMLInputElement | null;
+const notamSubmit = document.getElementById("admin-notam-submit") as HTMLButtonElement | null;
+const notamStatus = document.getElementById("admin-notam-status");
 
 const tabButtons = document.querySelectorAll<HTMLButtonElement>(".admin-tab");
 const panels = {
@@ -541,11 +551,103 @@ async function loadFlyoutLive() {
   flyoutLiveList.innerHTML = data.map(renderFlyoutLive).join("");
 }
 
+function fillNotamForm(notam: AirportNotam | null) {
+  if (notamActive) notamActive.checked = notam?.is_active ?? false;
+  if (notamReason) notamReason.value = notam?.reason ?? "";
+  if (notamCloses) notamCloses.value = toDatetimeLocalValue(notam?.closes_at);
+  if (notamOpens) notamOpens.value = toDatetimeLocalValue(notam?.opens_at);
+  updateNotamStatus(notam);
+}
+
+function updateNotamStatus(notam: AirportNotam | null) {
+  if (!notamStatus) return;
+
+  if (!notam?.is_active) {
+    notamStatus.textContent =
+      "NOTAM is off. Enable it below and set a closed-from time to schedule a home page closure notice.";
+    return;
+  }
+
+  if (isAirportNotamScheduled(notam)) {
+    notamStatus.textContent = `Scheduled — the home page notice will appear automatically at ${formatNotamDateTime(notam.closes_at)}. It will not turn off at the expected reopening time; uncheck the box when the airport reopens.`;
+    return;
+  }
+
+  if (isAirportNotamLive(notam)) {
+    notamStatus.textContent =
+      "Live on the home page now. The notice will stay visible after the expected reopening time until you turn it off.";
+    return;
+  }
+
+  notamStatus.textContent = "Enabled — save a closed-from time to schedule when the notice appears.";
+}
+
+function notamSaveMessage(notam: AirportNotam) {
+  if (!notam.is_active) {
+    return "NOTAM saved — home page notice is off.";
+  }
+  if (isAirportNotamScheduled(notam)) {
+    return `NOTAM scheduled — will appear automatically at ${formatNotamDateTime(notam.closes_at)}.`;
+  }
+  return "NOTAM saved — airport closed notice is live on the home page.";
+}
+
+async function loadAirportNotam() {
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from("airport_notam").select("*").eq("id", 1).maybeSingle();
+
+  if (error) {
+    showMessage(error.message);
+    return;
+  }
+
+  fillNotamForm(data);
+}
+
+async function saveAirportNotam() {
+  if (!notamForm) return;
+
+  const isActive = notamActive?.checked ?? false;
+  const reason = String(notamReason?.value ?? "").trim();
+  const closesAt = fromDatetimeLocalValue(notamCloses?.value);
+  const opensAt = fromDatetimeLocalValue(notamOpens?.value);
+
+  if (isActive && !reason) {
+    throw new Error("Please enter a brief reason for the closure before enabling the NOTAM.");
+  }
+
+  if (isActive && !closesAt) {
+    throw new Error("Please set a closed-from time so the NOTAM can appear automatically.");
+  }
+
+  const supabase = getSupabase();
+  const payload = {
+    id: 1,
+    is_active: isActive,
+    reason: reason || null,
+    closes_at: closesAt,
+    opens_at: opensAt,
+    updated_at: new Date().toISOString(),
+  };
+
+  const { data: existing } = await supabase.from("airport_notam").select("id").eq("id", 1).maybeSingle();
+
+  const { error } = existing
+    ? await supabase.from("airport_notam").update(payload).eq("id", 1)
+    : await supabase.from("airport_notam").insert(payload);
+
+  if (error) throw error;
+
+  updateNotamStatus(payload as AirportNotam);
+  return payload as AirportNotam;
+}
+
 async function showDashboard() {
   if (loginSection) loginSection.hidden = true;
   if (dashboard) dashboard.hidden = false;
   setActiveTab(readTabFromHash());
   await Promise.all([
+    loadAirportNotam(),
     loadPilotPending(),
     loadPilotLive(),
     loadEventPending(),
@@ -646,6 +748,29 @@ if (logoutBtn) {
     const supabase = getSupabase();
     await supabase.auth.signOut();
     await showLoginPanel();
+  });
+}
+
+if (notamForm) {
+  notamForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (notamSubmit) {
+      notamSubmit.disabled = true;
+      notamSubmit.textContent = "Saving…";
+    }
+
+    try {
+      const saved = await saveAirportNotam();
+      showMessage(notamSaveMessage(saved));
+    } catch (err) {
+      showMessage(err instanceof Error ? err.message : "Save failed. Please try again.");
+    } finally {
+      if (notamSubmit) {
+        notamSubmit.disabled = false;
+        notamSubmit.textContent = "Save NOTAM";
+      }
+    }
   });
 }
 

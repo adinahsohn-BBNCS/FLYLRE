@@ -20,6 +20,22 @@ import WeatherStation from "../components/WeatherStation.astro";
       </p>
     </header>
 
+    <aside id="airport-notam" class="airport-notam" role="alert" hidden>
+      <p class="airport-notam-eyebrow">NOTAM — Airport Closed</p>
+      <h2 class="airport-notam-title">54CL — Lake Riverside Estates is closed</h2>
+      <p id="airport-notam-reason" class="airport-notam-reason"></p>
+      <dl class="airport-notam-times">
+        <div>
+          <dt>Closed from</dt>
+          <dd id="airport-notam-closes"></dd>
+        </div>
+        <div>
+          <dt>Expected reopening</dt>
+          <dd id="airport-notam-opens"></dd>
+        </div>
+      </dl>
+    </aside>
+
     <div class="card-grid">
       <a class="card" href="/explore-the-airport/">
         <h2>Explore the Airport</h2>
@@ -58,5 +74,6 @@ import WeatherStation from "../components/WeatherStation.astro";
 </BaseLayout>
 
 <script>
+  import "../scripts/airport-notam.ts";
   import "../scripts/pilot-spotlight.ts";
 </script>

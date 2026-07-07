@@ -44,6 +44,46 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
       </div>
       <p id="admin-review-message" class="form-note" hidden></p>
 
+      <section class="admin-notam-section">
+        <h3 class="admin-section-title">Airport NOTAM — Home page</h3>
+        <p class="admin-section-help">
+          The notice appears automatically at <strong>Closed from</strong> and stays on after
+          <strong>Expected reopening</strong> until you turn it off. Expected reopening is shown to
+          visitors for information only.
+        </p>
+        <p id="admin-notam-status" class="admin-notam-status"></p>
+        <form id="admin-notam-form" class="admin-notam-form pilot-form">
+          <div class="form-field form-field-checkbox">
+            <label class="form-checkbox-label">
+              <input id="admin-notam-active" name="is_active" type="checkbox" />
+              Enable airport closure NOTAM
+            </label>
+          </div>
+          <div class="form-field">
+            <label for="admin-notam-reason">Reason for closure</label>
+            <textarea
+              id="admin-notam-reason"
+              name="reason"
+              rows="3"
+              placeholder="Brief reason — e.g. runway maintenance, weather damage, community event"
+            ></textarea>
+          </div>
+          <div class="admin-notam-times">
+            <div class="form-field">
+              <label for="admin-notam-closes">Closed from</label>
+              <input id="admin-notam-closes" name="closes_at" type="datetime-local" />
+              <p class="form-hint">The home page notice turns on automatically at this time.</p>
+            </div>
+            <div class="form-field">
+              <label for="admin-notam-opens">Expected reopening</label>
+              <input id="admin-notam-opens" name="opens_at" type="datetime-local" />
+              <p class="form-hint">Shown to visitors only — the NOTAM does not turn off at this time.</p>
+            </div>
+          </div>
+          <button id="admin-notam-submit" type="submit" class="form-submit">Save NOTAM</button>
+        </form>
+      </section>
+
       <div class="admin-tabs" role="tablist" aria-label="Admin sections">
         <button
           type="button"
