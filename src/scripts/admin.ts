@@ -105,6 +105,7 @@ function renderPilotPending(submission: PilotSubmission) {
       </div>
       <p class="admin-meta"><strong>Email:</strong> ${escapeHtml(submission.email)}</p>
       <p class="admin-meta"><strong>Aircraft:</strong> ${escapeHtml(submission.aircraft ?? "—")}</p>
+      <p class="admin-meta"><strong>Name on site:</strong> ${submission.show_name === false ? "No — aircraft/description only" : "Yes"}</p>
       <p class="admin-meta">${photo}</p>
       <p class="admin-bio">${escapeHtml(submission.bio)}</p>
       <div class="admin-actions">
@@ -143,6 +144,12 @@ function renderPilotLive(submission: PilotSubmission) {
         <div class="form-field">
           <label>About</label>
           <textarea name="bio" rows="4" required>${escapeHtml(submission.bio)}</textarea>
+        </div>
+        <div class="form-field form-field-checkbox">
+          <label class="form-checkbox-label">
+            <input name="show_name" type="checkbox"${submission.show_name === false ? "" : " checked"} />
+            Show name on Meet the Planes
+          </label>
         </div>
         <div class="admin-actions">
           <button type="submit" class="form-submit">Save changes</button>
@@ -751,10 +758,11 @@ document.addEventListener("submit", async (event) => {
       const email = String(data.get("email") ?? "").trim();
       const aircraft = String(data.get("aircraft") ?? "").trim();
       const bio = String(data.get("bio") ?? "").trim();
+      const showName = data.get("show_name") === "on";
 
       const { error } = await supabase
         .from("pilot_submissions")
-        .update({ name, email, aircraft: aircraft || null, bio })
+        .update({ name, email, aircraft: aircraft || null, bio, show_name: showName })
         .eq("id", id)
         .eq("status", "approved");
 

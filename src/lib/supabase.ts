@@ -8,6 +8,7 @@ export type PilotSubmission = {
   aircraft: string | null;
   bio: string;
   photo_url: string | null;
+  show_name: boolean;
   status: "pending" | "approved" | "rejected";
   reviewed_at: string | null;
 };

@@ -12,18 +12,28 @@ function escapeHtml(value: string) {
     .replaceAll('"', "&quot;");
 }
 
+function showPilotName(pilot: PilotSubmission) {
+  return pilot.show_name !== false;
+}
+
+function pilotHeading(pilot: PilotSubmission) {
+  if (showPilotName(pilot)) return escapeHtml(pilot.name);
+  return escapeHtml(pilot.aircraft ?? "Plane at LRE");
+}
+
 function renderPilot(pilot: PilotSubmission) {
   const photo = pilot.photo_url
     ? `<img class="pilot-photo" src="${escapeHtml(pilot.photo_url)}" alt="" loading="lazy" />`
     : "";
-  const aircraft = pilot.aircraft
-    ? `<p class="pilot-aircraft">${escapeHtml(pilot.aircraft)}</p>`
-    : "";
+  const aircraft =
+    showPilotName(pilot) && pilot.aircraft
+      ? `<p class="pilot-aircraft">${escapeHtml(pilot.aircraft)}</p>`
+      : "";
 
   return `
     <article class="pilot-card">
       ${photo}
-      <h3>${escapeHtml(pilot.name)}</h3>
+      <h3>${pilotHeading(pilot)}</h3>
       ${aircraft}
       <p>${escapeHtml(pilot.bio)}</p>
     </article>

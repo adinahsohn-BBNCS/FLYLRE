@@ -10,6 +10,7 @@ create table if not exists public.pilot_submissions (
   aircraft text,
   bio text not null,
   photo_url text,
+  show_name boolean not null default true,
   status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')),
   reviewed_at timestamptz
 );
