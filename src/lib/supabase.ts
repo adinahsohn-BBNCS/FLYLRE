@@ -63,6 +63,15 @@ export type EventPhoto = {
   reviewed_at: string | null;
 };
 
+export type AirportNotam = {
+  id: number;
+  is_active: boolean;
+  reason: string | null;
+  closes_at: string | null;
+  opens_at: string | null;
+  updated_at: string;
+};
+
 let client: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient {
