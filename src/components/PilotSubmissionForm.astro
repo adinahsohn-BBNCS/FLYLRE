@@ -25,6 +25,7 @@
       <div class="form-field">
         <label for="pilot-name">Name</label>
         <input id="pilot-name" name="name" type="text" required autocomplete="name" />
+        <p class="form-hint">Required for review — you can choose below whether it appears on the public page.</p>
       </div>
 
       <div class="form-field">
@@ -73,10 +74,21 @@
         <p class="form-hint">JPG, PNG, or WebP. Max 5 MB.</p>
       </div>
 
+      <div class="form-field form-field-checkbox">
+        <label class="form-checkbox-label">
+          <input id="pilot-show-name" name="show_name" type="checkbox" checked />
+          Show my name on Meet the Planes
+        </label>
+        <p class="form-hint">
+          If unchecked, only your aircraft and description will be shown after approval (not your
+          name).
+        </p>
+      </div>
+
       <p class="form-note">
         By submitting, you agree that your information and photo may be published on flylre.com
-        after approval, including the home page Pilot Spotlight. You can ask for edits or removal
-        anytime at <a href="mailto:info@flylre.com">info@flylre.com</a>.
+        after approval, including the home page spotlight. You can ask for edits or removal anytime
+        at <a href="mailto:info@flylre.com">info@flylre.com</a>.
       </p>
 
       <button id="pilot-form-submit" type="submit" class="form-submit">Submit for review</button>

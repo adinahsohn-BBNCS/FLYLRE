@@ -16,18 +16,28 @@ function pickRandomPilot(pilots: PilotSubmission[]) {
   return pilots[Math.floor(Math.random() * pilots.length)];
 }
 
+function showPilotName(pilot: PilotSubmission) {
+  return pilot.show_name !== false;
+}
+
+function pilotHeading(pilot: PilotSubmission) {
+  if (showPilotName(pilot)) return escapeHtml(pilot.name);
+  return escapeHtml(pilot.aircraft ?? "Plane at LRE");
+}
+
 function renderSpotlight(pilot: PilotSubmission) {
   const photo = pilot.photo_url
     ? `<img class="pilot-spotlight-photo" src="${escapeHtml(pilot.photo_url)}" alt="" loading="lazy" />`
     : "";
-  const aircraft = pilot.aircraft
-    ? `<p class="pilot-aircraft">${escapeHtml(pilot.aircraft)}</p>`
-    : "";
+  const aircraft =
+    showPilotName(pilot) && pilot.aircraft
+      ? `<p class="pilot-aircraft">${escapeHtml(pilot.aircraft)}</p>`
+      : "";
 
   return `
     ${photo}
     <div class="pilot-spotlight-body">
-      <h3>${escapeHtml(pilot.name)}</h3>
+      <h3>${pilotHeading(pilot)}</h3>
       ${aircraft}
       <p class="pilot-spotlight-bio">${escapeHtml(pilot.bio)}</p>
     </div>

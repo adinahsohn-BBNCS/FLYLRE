@@ -23,6 +23,7 @@ async function notifyAdmin(details: {
   aircraft: string;
   bio: string;
   photoUrl: string | null;
+  showName: boolean;
 }) {
   const notifyEmail = import.meta.env.PUBLIC_NOTIFY_EMAIL ?? "info@flylre.com";
   const adminUrl = `${window.location.origin}/admin/`;
@@ -43,6 +44,7 @@ async function notifyAdmin(details: {
         aircraft: details.aircraft || "—",
         bio: details.bio,
         photo: details.photoUrl ?? "No photo uploaded",
+        "Show name on site": details.showName ? "Yes" : "No — aircraft/description only",
       }),
     });
   } catch {
@@ -67,6 +69,7 @@ if (form) {
       const email = String(data.get("email") ?? "").trim();
       const aircraft = String(data.get("aircraft") ?? "").trim();
       const bio = String(data.get("bio") ?? "").trim();
+      const showName = data.get("show_name") === "on";
       const photo = data.get("photo");
 
       if (!name || !email || !bio) {
@@ -99,12 +102,13 @@ if (form) {
         aircraft: aircraft || null,
         bio,
         photo_url: photoUrl,
+        show_name: showName,
         status: "pending",
       });
 
       if (insertError) throw insertError;
 
-      await notifyAdmin({ name, email, aircraft, bio, photoUrl });
+      await notifyAdmin({ name, email, aircraft, bio, photoUrl, showName });
 
       form.hidden = true;
       if (success) success.hidden = false;
