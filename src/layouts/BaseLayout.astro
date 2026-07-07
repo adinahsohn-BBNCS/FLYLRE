@@ -2,7 +2,7 @@
 interface Props {
   title: string;
   description?: string;
-  current?: "home" | "explore" | "adventure" | "pilots" | "events";
+  current?: "home" | "explore" | "adventure" | "planes" | "events";
   robots?: string;
 }
 
@@ -42,7 +42,7 @@ const fullTitle = title === "Fly LRE" ? title : `${title} · Fly LRE`;
             <li><a href="/explore-the-airport/" aria-current={current === "explore" ? "page" : undefined}>Explore the Airport</a></li>
             <li><a href="/plan-your-next-adventure/" aria-current={current === "adventure" ? "page" : undefined}>Plan Your Next Adventure</a></li>
             <li><a href="/events/" aria-current={current === "events" ? "page" : undefined}>Events</a></li>
-            <li><a href="/meet-the-pilots/" aria-current={current === "pilots" ? "page" : undefined}>Meet the Pilots</a></li>
+            <li><a href="/meet-the-planes/" aria-current={current === "planes" ? "page" : undefined}>Meet the Planes</a></li>
           </ul>
         </nav>
       </div>

@@ -5,6 +5,9 @@ Options -Indexes
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # Redirect old Meet the Pilots URL
+  RewriteRule ^meet-the-pilots/?$ /meet-the-planes/ [R=301,L]
+
   # Block common WordPress paths if anything was missed during deploy
   RewriteRule ^wp-admin(/.*)?$ - [F,L]
   RewriteRule ^wp-login\.php$ - [F,L]

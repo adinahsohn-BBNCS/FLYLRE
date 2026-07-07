@@ -667,7 +667,7 @@ document.addEventListener("click", async (event) => {
       if (status === "approved") await loadPilotLive();
       showMessage(
         status === "approved"
-          ? "Approved — profile is now live on Meet the Pilots."
+          ? "Approved — profile is now live on Meet the Planes."
           : "Rejected — pilot submission removed from the pending queue.",
       );
     } else if (kind === "event") {
@@ -838,7 +838,7 @@ document.addEventListener("click", async (event) => {
 
   const page =
     kind === "pilot"
-      ? "Meet the Pilots"
+      ? "Meet the Planes"
       : kind === "event"
         ? "Events"
         : "Plan Your Next Adventure";

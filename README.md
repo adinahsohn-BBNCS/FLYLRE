@@ -9,7 +9,7 @@ Website for [flylre.com](https://www.flylre.com) — the pilots' page for Lake R
 - **Home** — minimal landing with links to the two main sections
 - **Explore the Airport** — 54CL specs, guest access, pilot essentials
 - **Plan Your Next Adventure** — suggested local fly-outs from LRE
-- **Meet the Pilots** — community profiles (submissions reviewed before publishing)
+- **Meet the Planes** — community profiles (submissions reviewed before publishing)
 - **Events** — community calendar (submissions reviewed before publishing)
 
 ## Pilot profile submissions (Supabase)
@@ -29,11 +29,11 @@ Submissions are saved in [Supabase](https://supabase.com). You approve or reject
 
 | Who | Where |
 |---|---|
-| Pilots submit profiles | `/meet-the-pilots/` |
+| Residents submit profiles | `/meet-the-planes/` |
 | Anyone submits an event | `/events/` |
 | You manage both | `/admin/` |
 
-**Approve** publishes the profile on Meet the Pilots immediately. **Reject** removes it from the pending queue. The **Live on Meet the Pilots** section lets you edit approved profiles or remove them from the public page.
+**Approve** publishes the profile on Meet the Planes immediately. **Reject** removes it from the pending queue. The **Live on Meet the Planes** section lets you edit approved profiles or remove them from the public page.
 
 When someone submits a form, an email is sent to **info@flylre.com** (via FormSubmit) with details and a link to `/admin/`. The first FormSubmit delivery may require a one-time activation click in that inbox.
 
