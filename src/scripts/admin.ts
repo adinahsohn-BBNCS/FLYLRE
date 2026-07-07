@@ -44,6 +44,7 @@ const panels = {
   pilots: document.getElementById("admin-panel-pilots"),
   events: document.getElementById("admin-panel-events"),
   flyouts: document.getElementById("admin-panel-flyouts"),
+  notams: document.getElementById("admin-panel-notams"),
 };
 
 function showMessage(message: string) {
@@ -80,7 +81,9 @@ function formatEventDate(dateStr: string) {
   });
 }
 
-function setActiveTab(tab: "pilots" | "events" | "flyouts") {
+type AdminTab = "pilots" | "events" | "flyouts" | "notams";
+
+function setActiveTab(tab: AdminTab) {
   tabButtons.forEach((button) => {
     const active = button.dataset.tab === tab;
     button.setAttribute("aria-selected", active ? "true" : "false");
@@ -90,16 +93,24 @@ function setActiveTab(tab: "pilots" | "events" | "flyouts") {
   if (panels.pilots) panels.pilots.hidden = tab !== "pilots";
   if (panels.events) panels.events.hidden = tab !== "events";
   if (panels.flyouts) panels.flyouts.hidden = tab !== "flyouts";
+  if (panels.notams) panels.notams.hidden = tab !== "notams";
 
   const hash =
-    tab === "events" ? "/admin/#events" : tab === "flyouts" ? "/admin/#flyouts" : "/admin/";
+    tab === "pilots"
+      ? "/admin/#pilots"
+      : tab === "events"
+        ? "/admin/#events"
+        : tab === "flyouts"
+          ? "/admin/#flyouts"
+          : "/admin/";
   history.replaceState(null, "", hash);
 }
 
-function readTabFromHash(): "pilots" | "events" | "flyouts" {
+function readTabFromHash(): AdminTab {
+  if (window.location.hash === "#pilots") return "pilots";
   if (window.location.hash === "#events") return "events";
   if (window.location.hash === "#flyouts") return "flyouts";
-  return "pilots";
+  return "notams";
 }
 
 function renderPilotPending(submission: PilotSubmission) {
@@ -711,7 +722,7 @@ async function updateFlyoutStatus(id: string, status: "approved" | "rejected") {
 
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const tab = button.dataset.tab as "pilots" | "events" | "flyouts" | undefined;
+    const tab = button.dataset.tab as AdminTab | undefined;
     if (tab) setActiveTab(tab);
   });
 });
