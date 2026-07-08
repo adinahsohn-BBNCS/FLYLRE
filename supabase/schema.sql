@@ -1,6 +1,34 @@
 -- Run this entire file in Supabase: SQL Editor → New query → Run
 -- Project: https://uatcyrtfpxzdmcozaeeh.supabase.co
 
+-- Admin roles: full (default) or notams-only via auth.users app_metadata.admin_role
+create or replace function public.is_full_admin()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select auth.uid() is not null
+    and coalesce(auth.jwt() -> 'app_metadata' ->> 'admin_role', 'full') = 'full';
+$$;
+
+create or replace function public.can_manage_notams()
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select auth.uid() is not null
+    and coalesce(auth.jwt() -> 'app_metadata' ->> 'admin_role', 'full') in ('full', 'notams');
+$$;
+
+revoke all on function public.is_full_admin() from public;
+revoke all on function public.can_manage_notams() from public;
+grant execute on function public.is_full_admin() to authenticated;
+grant execute on function public.can_manage_notams() to authenticated;
+
 -- Pilot submissions
 create table if not exists public.pilot_submissions (
   id uuid primary key default gen_random_uuid(),
@@ -36,15 +64,15 @@ create policy "Admin can read all pilot submissions"
   on public.pilot_submissions
   for select
   to authenticated
-  using (true);
+  using (public.is_full_admin());
 
 -- Logged-in admin can approve or reject
 create policy "Admin can update pilot submissions"
   on public.pilot_submissions
   for update
   to authenticated
-  using (true)
-  with check (status in ('pending', 'approved', 'rejected'));
+  using (public.is_full_admin())
+  with check (public.is_full_admin() and status in ('pending', 'approved', 'rejected'));
 
 -- Photo storage (public read for approved profile images)
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
@@ -105,14 +133,14 @@ create policy "Admin can read all event submissions"
   on public.event_submissions
   for select
   to authenticated
-  using (true);
+  using (public.is_full_admin());
 
 create policy "Admin can update event submissions"
   on public.event_submissions
   for update
   to authenticated
-  using (true)
-  with check (status in ('pending', 'approved', 'rejected'));
+  using (public.is_full_admin())
+  with check (public.is_full_admin() and status in ('pending', 'approved', 'rejected'));
 
 -- Fly-out submissions (Plan Your Next Adventure)
 create table if not exists public.flyout_submissions (
@@ -145,14 +173,14 @@ create policy "Admin can read all flyout submissions"
   on public.flyout_submissions
   for select
   to authenticated
-  using (true);
+  using (public.is_full_admin());
 
 create policy "Admin can update flyout submissions"
   on public.flyout_submissions
   for update
   to authenticated
-  using (true)
-  with check (status in ('pending', 'approved', 'rejected'));
+  using (public.is_full_admin())
+  with check (public.is_full_admin() and status in ('pending', 'approved', 'rejected'));
 
 -- Event RSVPs and photos (see event-rsvps-photos.sql for full migration on existing projects)
 create table if not exists public.event_rsvps (
@@ -179,14 +207,14 @@ create policy "Admin can read all event RSVPs"
   on public.event_rsvps
   for select
   to authenticated
-  using (true);
+  using (public.is_full_admin());
 
 create policy "Admin can update event RSVPs"
   on public.event_rsvps
   for update
   to authenticated
-  using (true)
-  with check (status in ('pending', 'approved', 'rejected'));
+  using (public.is_full_admin())
+  with check (public.is_full_admin() and status in ('pending', 'approved', 'rejected'));
 
 create table if not exists public.event_photos (
   id uuid primary key default gen_random_uuid(),
@@ -218,14 +246,14 @@ create policy "Admin can read all event photos"
   on public.event_photos
   for select
   to authenticated
-  using (true);
+  using (public.is_full_admin());
 
 create policy "Admin can update event photos"
   on public.event_photos
   for update
   to authenticated
-  using (true)
-  with check (status in ('pending', 'approved', 'rejected'));
+  using (public.is_full_admin())
+  with check (public.is_full_admin() and status in ('pending', 'approved', 'rejected'));
 
 create or replace function public.approved_event_rsvp_counts()
 returns table(event_id uuid, rsvp_count bigint)
@@ -327,20 +355,20 @@ create policy "Admin can read airport NOTAM"
   on public.airport_notam
   for select
   to authenticated
-  using (true);
+  using (public.can_manage_notams());
 
 create policy "Admin can update airport NOTAM"
   on public.airport_notam
   for update
   to authenticated
-  using (true)
-  with check (id = 1);
+  using (public.can_manage_notams())
+  with check (public.can_manage_notams() and id = 1);
 
 create policy "Admin can insert airport NOTAM"
   on public.airport_notam
   for insert
   to authenticated
-  with check (id = 1);
+  with check (public.can_manage_notams() and id = 1);
 
 insert into public.airport_notam (id, is_active)
 values (1, false)
