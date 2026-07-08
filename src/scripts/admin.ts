@@ -1,3 +1,4 @@
+import { canAccessAdminTab, resolveAdminRole, type AdminRole } from "../lib/admin-role";
 import { fromDatetimeLocalValue, formatNotamDateTime, toDatetimeLocalValue } from "../lib/datetime-local";
 import { isAirportNotamLive, isAirportNotamScheduled } from "../lib/airport-notam";
 import { getSupabase, type AirportNotam, type EventPhoto, type EventRsvp, type EventSubmission, type FlyoutSubmission, type PilotSubmission } from "../lib/supabase";
@@ -47,6 +48,8 @@ const panels = {
   notams: document.getElementById("admin-panel-notams"),
 };
 
+let currentAdminRole: AdminRole = "full";
+
 function showMessage(message: string) {
   if (!reviewMessage) return;
   reviewMessage.hidden = false;
@@ -83,7 +86,20 @@ function formatEventDate(dateStr: string) {
 
 type AdminTab = "pilots" | "events" | "flyouts" | "notams";
 
+function applyAdminRoleUI(role: AdminRole) {
+  currentAdminRole = role;
+
+  tabButtons.forEach((button) => {
+    const tab = button.dataset.tab ?? "";
+    button.hidden = !canAccessAdminTab(role, tab);
+  });
+}
+
 function setActiveTab(tab: AdminTab) {
+  if (!canAccessAdminTab(currentAdminRole, tab)) {
+    tab = "notams";
+  }
+
   tabButtons.forEach((button) => {
     const active = button.dataset.tab === tab;
     button.setAttribute("aria-selected", active ? "true" : "false");
@@ -107,10 +123,17 @@ function setActiveTab(tab: AdminTab) {
 }
 
 function readTabFromHash(): AdminTab {
+  if (currentAdminRole === "notams") return "notams";
   if (window.location.hash === "#pilots") return "pilots";
   if (window.location.hash === "#events") return "events";
   if (window.location.hash === "#flyouts") return "flyouts";
   return "notams";
+}
+
+async function resolveSessionAdminRole() {
+  const supabase = getSupabase();
+  const { data } = await supabase.auth.getSession();
+  return resolveAdminRole(data.session?.user);
 }
 
 function renderPilotPending(submission: PilotSubmission) {
@@ -656,23 +679,35 @@ async function saveAirportNotam() {
 async function showDashboard() {
   if (loginSection) loginSection.hidden = true;
   if (dashboard) dashboard.hidden = false;
+
+  const role = await resolveSessionAdminRole();
+  applyAdminRoleUI(role);
   setActiveTab(readTabFromHash());
-  await Promise.all([
-    loadAirportNotam(),
-    loadPilotPending(),
-    loadPilotLive(),
-    loadEventPending(),
-    loadEventRsvpPending(),
-    loadEventPhotoPending(),
-    loadEventLive(),
-    loadFlyoutPending(),
-    loadFlyoutLive(),
-  ]);
+
+  const loads = [loadAirportNotam()];
+  if (role === "full") {
+    loads.push(
+      loadPilotPending(),
+      loadPilotLive(),
+      loadEventPending(),
+      loadEventRsvpPending(),
+      loadEventPhotoPending(),
+      loadEventLive(),
+      loadFlyoutPending(),
+      loadFlyoutLive(),
+    );
+  }
+
+  await Promise.all(loads);
 }
 
 async function showLoginPanel() {
   if (loginSection) loginSection.hidden = false;
   if (dashboard) dashboard.hidden = true;
+  currentAdminRole = "full";
+  tabButtons.forEach((button) => {
+    button.hidden = false;
+  });
 }
 
 async function updatePilotStatus(id: string, status: "approved" | "rejected") {
@@ -723,7 +758,7 @@ async function updateFlyoutStatus(id: string, status: "approved" | "rejected") {
 tabButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const tab = button.dataset.tab as AdminTab | undefined;
-    if (tab) setActiveTab(tab);
+    if (tab && canAccessAdminTab(currentAdminRole, tab)) setActiveTab(tab);
   });
 });
 

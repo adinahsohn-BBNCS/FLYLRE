@@ -1282,6 +1282,10 @@ li {
   border-bottom: 1px solid rgba(158, 179, 201, 0.15);
 }
 
+.admin-tab[hidden] {
+  display: none;
+}
+
 .admin-tab {
   margin-bottom: -1px;
   padding: 0.65rem 1.25rem;
