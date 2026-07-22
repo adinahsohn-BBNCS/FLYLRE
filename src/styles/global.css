@@ -218,8 +218,13 @@ nav a[aria-current="page"] {
   margin-bottom: 0;
 }
 
+.page-home .hero-support {
+  margin-top: -1.1rem;
+  margin-bottom: 0.85rem;
+}
+
 .page-home .hero-sub {
-  margin-top: -1.35rem;
+  margin-top: 0;
 }
 
 .page-home .card-grid {
@@ -277,6 +282,15 @@ nav a[aria-current="page"] {
   color: var(--cloud-muted);
   max-width: 28rem;
   margin: 0 auto;
+}
+
+.hero-support {
+  max-width: 32rem;
+  margin: 0 auto;
+  font-size: 0.9rem;
+  font-weight: 500;
+  line-height: 1.5;
+  color: var(--cloud);
 }
 
 /* Cards (home) */
@@ -1520,8 +1534,14 @@ li {
 }
 
 .footer-visit {
+  margin: 0 0 0.35rem;
+  font-style: italic;
+}
+
+.footer-emergency {
   margin: 0 0 0.75rem;
   font-style: italic;
+  color: var(--cloud);
 }
 
 .footer-admin-link {
