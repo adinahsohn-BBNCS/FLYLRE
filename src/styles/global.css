@@ -287,10 +287,10 @@ nav a[aria-current="page"] {
 .hero-support {
   max-width: 32rem;
   margin: 0 auto;
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.95rem;
+  font-style: italic;
   line-height: 1.5;
-  color: var(--cloud);
+  color: var(--cloud-muted);
 }
 
 /* Cards (home) */
@@ -1541,7 +1541,6 @@ li {
 .footer-emergency {
   margin: 0 0 0.75rem;
   font-style: italic;
-  color: var(--cloud);
 }
 
 .footer-admin-link {
