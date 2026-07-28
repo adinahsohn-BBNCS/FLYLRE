@@ -288,6 +288,7 @@ nav a[aria-current="page"] {
   max-width: 32rem;
   margin: 0 auto;
   font-size: 0.95rem;
+  font-weight: 700;
   font-style: italic;
   line-height: 1.5;
   color: var(--cloud-muted);
