@@ -1,5 +1,5 @@
 -- Run in Supabase SQL Editor if airport_notam already exists.
--- NOTAM appears automatically at closes_at (client + this RPC); hides 2 hours after opens_at.
+-- NOTAM appears at closes_at and hides automatically 2 hours after opens_at.
 
 create or replace function public.public_airport_notam()
 returns table (

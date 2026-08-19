@@ -345,7 +345,8 @@ as $$
   from public.airport_notam
   where id = 1
     and is_active = true
-    and (closes_at is null or closes_at <= clock_timestamp());
+    and (closes_at is null or closes_at <= clock_timestamp())
+    and (opens_at is null or opens_at + interval '2 hours' > clock_timestamp());
 $$;
 
 revoke all on function public.public_airport_notam() from public;

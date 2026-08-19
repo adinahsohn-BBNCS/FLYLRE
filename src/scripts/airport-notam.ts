@@ -1,5 +1,5 @@
+import { autoReopenAt, isAirportNotamLive, isAirportNotamScheduled } from "../lib/airport-notam";
 import { formatNotamDateTime } from "../lib/datetime-local";
-import { isAirportNotamLive } from "../lib/airport-notam";
 import { getSupabase } from "../lib/supabase";
 
 const banner = document.getElementById("airport-notam");
@@ -27,6 +27,19 @@ function clearAppearanceTimer() {
   }
 }
 
+function scheduleAt(when: Date | null) {
+  clearAppearanceTimer();
+  if (!when) return;
+
+  const delay = when.getTime() - Date.now();
+  if (delay <= 0) return;
+  if (delay > MAX_TIMEOUT_MS) return;
+
+  appearanceTimer = window.setTimeout(() => {
+    void loadAirportNotam();
+  }, delay + 500);
+}
+
 function showNotam(data: PublicNotam) {
   if (!banner) return;
 
@@ -41,22 +54,6 @@ function showNotam(data: PublicNotam) {
 
 function hideNotam() {
   if (banner) banner.hidden = true;
-}
-
-function scheduleAppearance(closesAt: string | null) {
-  clearAppearanceTimer();
-  if (!closesAt) return;
-
-  const closesMs = new Date(closesAt).getTime();
-  if (Number.isNaN(closesMs)) return;
-
-  const delay = closesMs - Date.now();
-  if (delay <= 0) return;
-  if (delay > MAX_TIMEOUT_MS) return;
-
-  appearanceTimer = window.setTimeout(() => {
-    void loadAirportNotam();
-  }, delay + 500);
 }
 
 async function loadAirportNotam() {
@@ -78,14 +75,20 @@ async function loadAirportNotam() {
       return;
     }
 
-    if (!isAirportNotamLive(data)) {
+    if (isAirportNotamScheduled(data)) {
       hideNotam();
-      scheduleAppearance(data.closes_at);
+      scheduleAt(data.closes_at ? new Date(data.closes_at) : null);
       return;
     }
 
-    clearAppearanceTimer();
+    if (!isAirportNotamLive(data)) {
+      clearAppearanceTimer();
+      hideNotam();
+      return;
+    }
+
     showNotam(data);
+    scheduleAt(autoReopenAt(data.opens_at));
   } catch {
     /* Leave banner hidden if NOTAM cannot be loaded */
   }

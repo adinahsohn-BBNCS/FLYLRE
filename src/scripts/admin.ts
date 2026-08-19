@@ -1,6 +1,6 @@
 import { canAccessAdminTab, resolveAdminRole, type AdminRole } from "../lib/admin-role";
 import { fromDatetimeLocalValue, formatNotamDateTime, toDatetimeLocalValue } from "../lib/datetime-local";
-import { isAirportNotamLive, isAirportNotamScheduled } from "../lib/airport-notam";
+import { autoReopenAt, isAirportNotamExpired, isAirportNotamLive, isAirportNotamScheduled } from "../lib/airport-notam";
 import { getSupabase, type AirportNotam, type EventPhoto, type EventRsvp, type EventSubmission, type FlyoutSubmission, type PilotSubmission } from "../lib/supabase";
 import { formatEventTime, parseEventTimeForInput } from "../lib/event-time";
 
@@ -603,13 +603,26 @@ function updateNotamStatus(notam: AirportNotam | null) {
   }
 
   if (isAirportNotamScheduled(notam)) {
-    notamStatus.textContent = `Scheduled — the home page notice will appear automatically at ${formatNotamDateTime(notam.closes_at)}. It will not turn off at the expected reopening time; uncheck the box when the airport reopens.`;
+    const autoReopen = autoReopenAt(notam.opens_at);
+    notamStatus.textContent = `Scheduled — the home page notice will appear automatically at ${formatNotamDateTime(notam.closes_at)}.${
+      autoReopen
+        ? ` If it is not turned off, the site will reopen automatically at ${formatNotamDateTime(autoReopen.toISOString())} (2 hours after expected reopening).`
+        : ""
+    }`;
     return;
   }
 
   if (isAirportNotamLive(notam)) {
+    const autoReopen = autoReopenAt(notam.opens_at);
+    notamStatus.textContent = autoReopen
+      ? `Live on the home page now. If it is not turned off, the site will reopen automatically at ${formatNotamDateTime(autoReopen.toISOString())} (2 hours after expected reopening).`
+      : "Live on the home page now. Set an expected reopening time so the notice can hide automatically 2 hours later.";
+    return;
+  }
+
+  if (isAirportNotamExpired(notam)) {
     notamStatus.textContent =
-      "Live on the home page now. The notice will stay visible after the expected reopening time until you turn it off.";
+      "The 2-hour safety window after expected reopening has passed, so the home page notice is hidden. Uncheck Enable and save, or set new times.";
     return;
   }
 
@@ -621,9 +634,18 @@ function notamSaveMessage(notam: AirportNotam) {
     return "NOTAM saved — home page notice is off.";
   }
   if (isAirportNotamScheduled(notam)) {
-    return `NOTAM scheduled — will appear automatically at ${formatNotamDateTime(notam.closes_at)}.`;
+    const autoReopen = autoReopenAt(notam.opens_at);
+    return autoReopen
+      ? `NOTAM scheduled — will appear automatically at ${formatNotamDateTime(notam.closes_at)} and hide 2 hours after expected reopening (${formatNotamDateTime(autoReopen.toISOString())}).`
+      : `NOTAM scheduled — will appear automatically at ${formatNotamDateTime(notam.closes_at)}.`;
   }
-  return "NOTAM saved — airport closed notice is live on the home page.";
+  if (isAirportNotamExpired(notam)) {
+    return "NOTAM saved — the 2-hour safety window has passed, so the home page notice is hidden.";
+  }
+  const autoReopen = autoReopenAt(notam.opens_at);
+  return autoReopen
+    ? `NOTAM saved — airport closed notice is live, and will hide automatically at ${formatNotamDateTime(autoReopen.toISOString())} if it is not turned off.`
+    : "NOTAM saved — airport closed notice is live on the home page.";
 }
 
 async function loadAirportNotam() {
@@ -652,6 +674,16 @@ async function saveAirportNotam() {
 
   if (isActive && !closesAt) {
     throw new Error("Please set a closed-from time so the NOTAM can appear automatically.");
+  }
+
+  if (isActive && !opensAt) {
+    throw new Error(
+      "Please set an expected reopening time. The site will automatically reopen 2 hours after that time if it is not turned off.",
+    );
+  }
+
+  if (isActive && closesAt && opensAt && new Date(opensAt).getTime() <= new Date(closesAt).getTime()) {
+    throw new Error("Expected reopening must be after the closed-from time.");
   }
 
   const supabase = getSupabase();

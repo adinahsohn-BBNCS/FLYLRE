@@ -18,7 +18,7 @@ create policy "Public can read active airport NOTAM"
   to anon, authenticated
   using (is_active = true);
 
--- Public home page uses this RPC: live at closes_at, stays on after opens_at until admin disables.
+-- Public home page uses this RPC: live at closes_at; hides 2 hours after opens_at.
 create or replace function public.public_airport_notam()
 returns table (
   reason text,
@@ -34,7 +34,8 @@ as $$
   from public.airport_notam
   where id = 1
     and is_active = true
-    and (closes_at is null or closes_at <= clock_timestamp());
+    and (closes_at is null or closes_at <= clock_timestamp())
+    and (opens_at is null or opens_at + interval '2 hours' > clock_timestamp());
 $$;
 
 revoke all on function public.public_airport_notam() from public;
