@@ -134,6 +134,40 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
           </div>
           <button id="admin-notam-submit" type="submit" class="form-submit">Save NOTAM</button>
         </form>
+
+        <section id="admin-camera-section" class="admin-camera-section" hidden>
+          <h3 class="admin-section-title">Runway camera — Home page</h3>
+          <p class="admin-section-help">
+            Visitors press <strong>Watch live</strong> to load the rtsp.me player. Each press counts as
+            one view, and the button stops working after <strong>90 views a month</strong> so the
+            camera stays inside rtsp.me's free 100. The count resets on the 1st of each month.
+          </p>
+          <p id="admin-camera-status" class="admin-notam-status"></p>
+          <form id="admin-camera-form" class="admin-notam-form pilot-form">
+            <div class="form-field form-field-checkbox">
+              <label class="form-checkbox-label">
+                <input id="admin-camera-enabled" name="is_enabled" type="checkbox" />
+                Show the runway camera on the home page
+              </label>
+            </div>
+            <div class="form-field">
+              <label for="admin-camera-embed">rtsp.me embed link</label>
+              <input
+                id="admin-camera-embed"
+                name="embed_url"
+                type="text"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder="https://rtsp.me/embed/…/"
+              />
+              <p class="form-hint">
+                From rtsp.me → Edit camera → HTML+PHP Code. You can paste the link or the whole
+                iframe code. Never paste the camera's private rtsp:// link here.
+              </p>
+            </div>
+            <button id="admin-camera-submit" type="submit" class="form-submit">Save camera</button>
+          </form>
+        </section>
       </div>
 
       <div id="admin-panel-pilots" class="admin-panel" role="tabpanel" aria-labelledby="admin-tab-pilots" hidden>

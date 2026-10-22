@@ -1,0 +1,34 @@
+---
+---
+
+<section
+  id="runway-camera"
+  class="weather-station runway-camera"
+  aria-labelledby="runway-camera-heading"
+  hidden
+>
+  <div class="weather-station-header">
+    <div>
+      <p class="weather-eyebrow">Live view · 54CL</p>
+      <h2 id="runway-camera-heading">Runway Camera</h2>
+    </div>
+  </div>
+
+  <div id="runway-camera-frame" class="runway-camera-frame">
+    <div id="runway-camera-start" class="runway-camera-start">
+      <button id="runway-camera-watch" type="button" class="form-submit">Watch live</button>
+      <p class="runway-camera-hint">See the runway and windsock in real time.</p>
+    </div>
+    <p id="runway-camera-limit" class="runway-camera-limit" hidden></p>
+  </div>
+
+  <p id="runway-camera-error" class="weather-error" hidden></p>
+  <p class="weather-note">
+    Each viewing plays for up to 10 minutes. Not a substitute for an official weather report —
+    verify conditions before flight.
+  </p>
+</section>
+
+<script>
+  import "../scripts/runway-camera.ts";
+</script>

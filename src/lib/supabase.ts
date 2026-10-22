@@ -63,6 +63,14 @@ export type EventPhoto = {
   reviewed_at: string | null;
 };
 
+export type RunwayCamera = {
+  id: number;
+  is_enabled: boolean;
+  embed_url: string | null;
+  monthly_limit: number;
+  updated_at: string;
+};
+
 export type AirportNotam = {
   id: number;
   is_active: boolean;

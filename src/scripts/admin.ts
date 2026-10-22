@@ -1,7 +1,8 @@
 import { canAccessAdminTab, resolveAdminRole, type AdminRole } from "../lib/admin-role";
 import { fromDatetimeLocalValue, formatNotamDateTime, toDatetimeLocalValue } from "../lib/datetime-local";
 import { autoReopenAt, isAirportNotamExpired, isAirportNotamLive, isAirportNotamScheduled } from "../lib/airport-notam";
-import { getSupabase, type AirportNotam, type EventPhoto, type EventRsvp, type EventSubmission, type FlyoutSubmission, type PilotSubmission } from "../lib/supabase";
+import { currentCameraMonth, nextCameraResetLabel, normalizeRtspMeEmbed } from "../lib/runway-camera";
+import { getSupabase, type AirportNotam, type EventPhoto, type EventRsvp, type EventSubmission, type FlyoutSubmission, type PilotSubmission, type RunwayCamera } from "../lib/supabase";
 import { formatEventTime, parseEventTimeForInput } from "../lib/event-time";
 
 const loginSection = document.getElementById("admin-login");
@@ -39,6 +40,13 @@ const notamCloses = document.getElementById("admin-notam-closes") as HTMLInputEl
 const notamOpens = document.getElementById("admin-notam-opens") as HTMLInputElement | null;
 const notamSubmit = document.getElementById("admin-notam-submit") as HTMLButtonElement | null;
 const notamStatus = document.getElementById("admin-notam-status");
+
+const cameraSection = document.getElementById("admin-camera-section");
+const cameraForm = document.getElementById("admin-camera-form") as HTMLFormElement | null;
+const cameraEnabled = document.getElementById("admin-camera-enabled") as HTMLInputElement | null;
+const cameraEmbed = document.getElementById("admin-camera-embed") as HTMLInputElement | null;
+const cameraSubmit = document.getElementById("admin-camera-submit") as HTMLButtonElement | null;
+const cameraStatus = document.getElementById("admin-camera-status");
 
 const tabButtons = document.querySelectorAll<HTMLButtonElement>(".admin-tab");
 const panels = {
@@ -93,6 +101,8 @@ function applyAdminRoleUI(role: AdminRole) {
     const tab = button.dataset.tab ?? "";
     button.hidden = !canAccessAdminTab(role, tab);
   });
+
+  if (cameraSection) cameraSection.hidden = role !== "full";
 }
 
 function setActiveTab(tab: AdminTab) {
@@ -708,6 +718,84 @@ async function saveAirportNotam() {
   return payload as AirportNotam;
 }
 
+function updateCameraStatus(camera: RunwayCamera | null, viewsUsed: number) {
+  if (!cameraStatus) return;
+
+  const limit = camera?.monthly_limit ?? 90;
+  const usage = `Views this month: ${viewsUsed} of ${limit}.`;
+
+  if (!camera?.is_enabled || !camera.embed_url) {
+    cameraStatus.textContent = `Off — the camera panel is hidden on the home page. ${usage}`;
+    return;
+  }
+
+  if (viewsUsed >= limit) {
+    cameraStatus.textContent = `Monthly limit reached — visitors see a "back on ${nextCameraResetLabel()}" message. ${usage}`;
+    return;
+  }
+
+  cameraStatus.textContent = `Live on the home page. ${usage}`;
+}
+
+async function loadRunwayCamera() {
+  if (!cameraForm) return;
+
+  const supabase = getSupabase();
+  const [cameraResult, viewsResult] = await Promise.all([
+    supabase.from("runway_camera").select("*").eq("id", 1).maybeSingle<RunwayCamera>(),
+    supabase
+      .from("runway_camera_views")
+      .select("view_count")
+      .eq("month", currentCameraMonth())
+      .maybeSingle<{ view_count: number }>(),
+  ]);
+
+  if (cameraResult.error || viewsResult.error) {
+    if (cameraStatus) {
+      cameraStatus.textContent =
+        "The runway camera isn't set up in Supabase yet. Run supabase/runway-camera.sql in the SQL Editor, then reload this page.";
+    }
+    if (cameraSubmit) cameraSubmit.disabled = true;
+    return;
+  }
+
+  const camera = cameraResult.data;
+  if (cameraEnabled) cameraEnabled.checked = camera?.is_enabled ?? false;
+  if (cameraEmbed) cameraEmbed.value = camera?.embed_url ?? "";
+  if (cameraSubmit) cameraSubmit.disabled = false;
+  updateCameraStatus(camera, viewsResult.data?.view_count ?? 0);
+}
+
+async function saveRunwayCamera() {
+  const raw = String(cameraEmbed?.value ?? "").trim();
+  const isEnabled = cameraEnabled?.checked ?? false;
+
+  if (raw.toLowerCase().includes("rtsp://") || raw.toLowerCase().includes("rtsps://")) {
+    throw new Error(
+      "That looks like the camera's private rtsp:// link. Paste the rtsp.me embed link from the HTML+PHP Code tab instead.",
+    );
+  }
+
+  const embedUrl = raw ? normalizeRtspMeEmbed(raw) : null;
+
+  if (raw && !embedUrl) {
+    throw new Error("Paste the rtsp.me embed link — it starts with https://rtsp.me/embed/.");
+  }
+
+  if (isEnabled && !embedUrl) {
+    throw new Error("Add the rtsp.me embed link before turning the camera on.");
+  }
+
+  const { error } = await getSupabase()
+    .from("runway_camera")
+    .upsert({ id: 1, is_enabled: isEnabled, embed_url: embedUrl, updated_at: new Date().toISOString() });
+
+  if (error) throw error;
+
+  await loadRunwayCamera();
+  return isEnabled;
+}
+
 async function showDashboard() {
   if (loginSection) loginSection.hidden = true;
   if (dashboard) dashboard.hidden = false;
@@ -719,6 +807,7 @@ async function showDashboard() {
   const loads = [loadAirportNotam()];
   if (role === "full") {
     loads.push(
+      loadRunwayCamera(),
       loadPilotPending(),
       loadPilotLive(),
       loadEventPending(),
@@ -847,6 +936,33 @@ if (notamForm) {
       if (notamSubmit) {
         notamSubmit.disabled = false;
         notamSubmit.textContent = "Save NOTAM";
+      }
+    }
+  });
+}
+
+if (cameraForm) {
+  cameraForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (cameraSubmit) {
+      cameraSubmit.disabled = true;
+      cameraSubmit.textContent = "Saving…";
+    }
+
+    try {
+      const enabled = await saveRunwayCamera();
+      showMessage(
+        enabled
+          ? "Runway camera saved — the Watch live panel is on the home page."
+          : "Runway camera saved — the panel is hidden on the home page.",
+      );
+    } catch (err) {
+      showMessage(err instanceof Error ? err.message : "Save failed. Please try again.");
+    } finally {
+      if (cameraSubmit) {
+        cameraSubmit.disabled = false;
+        cameraSubmit.textContent = "Save camera";
       }
     }
   });
