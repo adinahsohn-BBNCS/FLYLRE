@@ -5,8 +5,13 @@ Options -Indexes
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # Force HTTPS (Nexcess may terminate TLS at a proxy, so check the forwarded header too)
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
   # Redirect old Meet the Pilots URL
-  RewriteRule ^meet-the-pilots/?$ /meet-the-planes/ [R=301,L]
+  RewriteRule ^meet-the-pilots/?$ https://%{HTTP_HOST}/meet-the-planes/ [R=301,L]
 
   # Block common WordPress paths if anything was missed during deploy
   RewriteRule ^wp-admin(/.*)?$ - [F,L]
