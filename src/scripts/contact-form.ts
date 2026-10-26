@@ -1,3 +1,4 @@
+import { ADMIN_ALERT_DESTINATION } from "../lib/contact";
 import { getSupabase } from "../lib/supabase";
 
 const form = document.getElementById("contact-form") as HTMLFormElement | null;
@@ -46,6 +47,21 @@ function emailNotification(details: ContactMessage, keepalive: boolean) {
   });
 }
 
+function adminAlert(details: ContactMessage) {
+  return fetch(`https://formsubmit.co/ajax/${encodeURIComponent(ADMIN_ALERT_DESTINATION)}`, {
+    method: "POST",
+    keepalive: true,
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      _subject: "New Fly LRE message — check admin",
+      _template: "table",
+      From: details.name,
+      Topic: details.topic,
+      "Check messages": `${window.location.origin}/admin/#messages`,
+    }),
+  });
+}
+
 async function saveMessage(details: ContactMessage) {
   const { error } = await getSupabase().from("contact_messages").insert(details);
   return !error;
@@ -89,9 +105,11 @@ form?.addEventListener("submit", async (event) => {
   try {
     if (await saveMessage(details)) {
       showSuccess();
-      emailNotification(details, true).catch(() => {
-        /* Message is already saved in admin — a slow or failed email is not shown to the visitor */
-      });
+      for (const send of [emailNotification(details, true), adminAlert(details)]) {
+        send.catch(() => {
+          /* Message is already saved in admin — a slow or failed email is not shown to the visitor */
+        });
+      }
       return;
     }
 

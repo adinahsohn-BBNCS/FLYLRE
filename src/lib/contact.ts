@@ -5,6 +5,9 @@ export const CONTACT_TOPICS = [
   "Website feedback",
 ] as const;
 
+/** FormSubmit destination for the "check for messages" alert: an email, or the alias FormSubmit issues after activation. */
+export const ADMIN_ALERT_DESTINATION = "contact@flylre.com";
+
 /** Roundcube webmail for info@flylre.com — admin Reply opens a pre-filled draft here. */
 export const WEBMAIL_URL = "https://cloudhost-741777.us-west-1.nxcli.net:2443/roundcube/";
 
