@@ -1532,6 +1532,21 @@ li {
   color: #ffb4b4;
 }
 
+.admin-reply {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.admin-reply:hover {
+  border-color: var(--runway-amber);
+  color: var(--runway-amber);
+}
+
+.admin-message-body {
+  white-space: pre-wrap;
+  color: var(--cloud);
+}
+
 .note {
   font-size: 0.85rem;
   color: var(--cloud-muted);

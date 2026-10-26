@@ -89,6 +89,17 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         >
           Fly-outs
         </button>
+        <button
+          type="button"
+          class="admin-tab"
+          role="tab"
+          id="admin-tab-messages"
+          aria-controls="admin-panel-messages"
+          aria-selected="false"
+          data-tab="messages"
+        >
+          Messages
+        </button>
       </div>
 
       <div
@@ -227,6 +238,27 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
         </p>
         <p id="flyout-live-empty" class="pilot-placeholder" hidden>No live fly-outs yet.</p>
         <div id="flyout-live-list" class="admin-list" data-area="flyouts-live"></div>
+      </div>
+
+      <div
+        id="admin-panel-messages"
+        class="admin-panel"
+        role="tabpanel"
+        aria-labelledby="admin-tab-messages"
+        hidden
+      >
+        <h3 class="admin-section-title">New messages</h3>
+        <p class="admin-section-help">
+          Sent from the Contact page. Each one is also emailed to info@flylre.com. Click Reply to
+          answer by email, then Mark handled.
+        </p>
+        <p id="message-new-empty" class="pilot-placeholder" hidden>No new messages.</p>
+        <div id="message-new-list" class="admin-list"></div>
+
+        <h3 class="admin-section-title">Handled</h3>
+        <p class="admin-section-help">The 25 most recent handled messages.</p>
+        <p id="message-handled-empty" class="pilot-placeholder" hidden>No handled messages yet.</p>
+        <div id="message-handled-list" class="admin-list"></div>
       </div>
     </section>
   </div>

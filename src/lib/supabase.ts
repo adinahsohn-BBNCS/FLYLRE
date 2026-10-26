@@ -63,6 +63,17 @@ export type EventPhoto = {
   reviewed_at: string | null;
 };
 
+export type ContactMessage = {
+  id: string;
+  created_at: string;
+  name: string;
+  email: string;
+  topic: string;
+  message: string;
+  status: "new" | "handled";
+  handled_at: string | null;
+};
+
 export type RunwayCamera = {
   id: number;
   is_enabled: boolean;

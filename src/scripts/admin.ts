@@ -2,7 +2,7 @@ import { canAccessAdminTab, resolveAdminRole, type AdminRole } from "../lib/admi
 import { fromDatetimeLocalValue, formatNotamDateTime, toDatetimeLocalValue } from "../lib/datetime-local";
 import { autoReopenAt, isAirportNotamExpired, isAirportNotamLive, isAirportNotamScheduled } from "../lib/airport-notam";
 import { currentCameraMonth, nextCameraResetLabel, normalizeRtspMeEmbed } from "../lib/runway-camera";
-import { getSupabase, type AirportNotam, type EventPhoto, type EventRsvp, type EventSubmission, type FlyoutSubmission, type PilotSubmission, type RunwayCamera } from "../lib/supabase";
+import { getSupabase, type AirportNotam, type ContactMessage, type EventPhoto, type EventRsvp, type EventSubmission, type FlyoutSubmission, type PilotSubmission, type RunwayCamera } from "../lib/supabase";
 import { formatEventTime, parseEventTimeForInput } from "../lib/event-time";
 
 const loginSection = document.getElementById("admin-login");
@@ -48,12 +48,19 @@ const cameraEmbed = document.getElementById("admin-camera-embed") as HTMLInputEl
 const cameraSubmit = document.getElementById("admin-camera-submit") as HTMLButtonElement | null;
 const cameraStatus = document.getElementById("admin-camera-status");
 
+const messageNewList = document.getElementById("message-new-list");
+const messageNewEmpty = document.getElementById("message-new-empty");
+const messageHandledList = document.getElementById("message-handled-list");
+const messageHandledEmpty = document.getElementById("message-handled-empty");
+const messagesTab = document.getElementById("admin-tab-messages");
+
 const tabButtons = document.querySelectorAll<HTMLButtonElement>(".admin-tab");
 const panels = {
   pilots: document.getElementById("admin-panel-pilots"),
   events: document.getElementById("admin-panel-events"),
   flyouts: document.getElementById("admin-panel-flyouts"),
   notams: document.getElementById("admin-panel-notams"),
+  messages: document.getElementById("admin-panel-messages"),
 };
 
 let currentAdminRole: AdminRole = "full";
@@ -92,7 +99,7 @@ function formatEventDate(dateStr: string) {
   });
 }
 
-type AdminTab = "pilots" | "events" | "flyouts" | "notams";
+type AdminTab = "pilots" | "events" | "flyouts" | "notams" | "messages";
 
 function applyAdminRoleUI(role: AdminRole) {
   currentAdminRole = role;
@@ -120,16 +127,9 @@ function setActiveTab(tab: AdminTab) {
   if (panels.events) panels.events.hidden = tab !== "events";
   if (panels.flyouts) panels.flyouts.hidden = tab !== "flyouts";
   if (panels.notams) panels.notams.hidden = tab !== "notams";
+  if (panels.messages) panels.messages.hidden = tab !== "messages";
 
-  const hash =
-    tab === "pilots"
-      ? "/admin/#pilots"
-      : tab === "events"
-        ? "/admin/#events"
-        : tab === "flyouts"
-          ? "/admin/#flyouts"
-          : "/admin/";
-  history.replaceState(null, "", hash);
+  history.replaceState(null, "", tab === "notams" ? "/admin/" : `/admin/#${tab}`);
 }
 
 function readTabFromHash(): AdminTab {
@@ -137,6 +137,7 @@ function readTabFromHash(): AdminTab {
   if (window.location.hash === "#pilots") return "pilots";
   if (window.location.hash === "#events") return "events";
   if (window.location.hash === "#flyouts") return "flyouts";
+  if (window.location.hash === "#messages") return "messages";
   return "notams";
 }
 
@@ -796,6 +797,71 @@ async function saveRunwayCamera() {
   return isEnabled;
 }
 
+function renderContactMessage(msg: ContactMessage) {
+  const replyHref = `mailto:${encodeURIComponent(msg.email)}?subject=${encodeURIComponent(`Re: ${msg.topic}`)}`;
+  const action =
+    msg.status === "new"
+      ? `<button type="button" class="form-submit" data-message-action="handled">Mark handled</button>`
+      : `<button type="button" class="admin-reject" data-message-action="new">Move back to new</button>`;
+
+  return `
+    <article class="admin-card" data-message-id="${escapeHtml(msg.id)}">
+      <div class="admin-card-header">
+        <h3>${escapeHtml(msg.name)}</h3>
+        <time>${formatDate(msg.created_at)}</time>
+      </div>
+      <p class="admin-meta"><strong>Topic:</strong> ${escapeHtml(msg.topic)}</p>
+      <p class="admin-meta"><strong>Email:</strong> <a href="${escapeHtml(replyHref)}">${escapeHtml(msg.email)}</a></p>
+      <p class="admin-bio admin-message-body">${escapeHtml(msg.message)}</p>
+      <div class="admin-actions">
+        <a class="admin-reject admin-reply" href="${escapeHtml(replyHref)}">Reply</a>
+        ${action}
+      </div>
+    </article>
+  `;
+}
+
+function fillMessageList(list: HTMLElement | null, empty: HTMLElement | null, messages: ContactMessage[]) {
+  if (!list) return;
+  list.innerHTML = messages.map(renderContactMessage).join("");
+  if (empty) empty.hidden = messages.length > 0;
+}
+
+async function loadContactMessages() {
+  const supabase = getSupabase();
+  const [newResult, handledResult] = await Promise.all([
+    supabase.from("contact_messages").select("*").eq("status", "new").order("created_at", { ascending: false }),
+    supabase
+      .from("contact_messages")
+      .select("*")
+      .eq("status", "handled")
+      .order("handled_at", { ascending: false })
+      .limit(25),
+  ]);
+
+  if (newResult.error || handledResult.error) {
+    if (messageNewEmpty) {
+      messageNewEmpty.textContent =
+        "Messages aren't set up in Supabase yet. Run supabase/contact-messages.sql in the SQL Editor, then reload this page.";
+      messageNewEmpty.hidden = false;
+    }
+    return;
+  }
+
+  const newMessages = (newResult.data ?? []) as ContactMessage[];
+  fillMessageList(messageNewList, messageNewEmpty, newMessages);
+  fillMessageList(messageHandledList, messageHandledEmpty, (handledResult.data ?? []) as ContactMessage[]);
+  if (messagesTab) messagesTab.textContent = newMessages.length ? `Messages (${newMessages.length})` : "Messages";
+}
+
+async function updateContactMessageStatus(id: string, status: ContactMessage["status"]) {
+  const { error } = await getSupabase()
+    .from("contact_messages")
+    .update({ status, handled_at: status === "handled" ? new Date().toISOString() : null })
+    .eq("id", id);
+  if (error) throw error;
+}
+
 async function showDashboard() {
   if (loginSection) loginSection.hidden = true;
   if (dashboard) dashboard.hidden = false;
@@ -808,6 +874,7 @@ async function showDashboard() {
   if (role === "full") {
     loads.push(
       loadRunwayCamera(),
+      loadContactMessages(),
       loadPilotPending(),
       loadPilotLive(),
       loadEventPending(),
@@ -940,6 +1007,28 @@ if (notamForm) {
     }
   });
 }
+
+document.addEventListener("click", async (event) => {
+  const button = (event.target as HTMLElement).closest(
+    "button[data-message-action]",
+  ) as HTMLButtonElement | null;
+  if (!button) return;
+
+  const card = button.closest("[data-message-id]") as HTMLElement | null;
+  const id = card?.dataset.messageId;
+  const status = button.dataset.messageAction as ContactMessage["status"] | undefined;
+  if (!id || !status) return;
+
+  button.disabled = true;
+  try {
+    await updateContactMessageStatus(id, status);
+    await loadContactMessages();
+    showMessage(status === "handled" ? "Message marked handled." : "Message moved back to new.");
+  } catch (err) {
+    showMessage(err instanceof Error ? err.message : "Update failed. Please try again.");
+    button.disabled = false;
+  }
+});
 
 if (cameraForm) {
   cameraForm.addEventListener("submit", async (event) => {
