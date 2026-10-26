@@ -2,7 +2,7 @@
 interface Props {
   title: string;
   description?: string;
-  current?: "home" | "explore" | "adventure" | "planes" | "events";
+  current?: "home" | "explore" | "adventure" | "planes" | "events" | "contact";
   robots?: string;
 }
 
@@ -43,6 +43,7 @@ const fullTitle = title === "Fly LRE" ? title : `${title} · Fly LRE`;
             <li><a href="/plan-your-next-adventure/" aria-current={current === "adventure" ? "page" : undefined}>Plan Your Next Adventure</a></li>
             <li><a href="/events/" aria-current={current === "events" ? "page" : undefined}>Events</a></li>
             <li><a href="/meet-the-planes/" aria-current={current === "planes" ? "page" : undefined}>Meet the Planes</a></li>
+            <li><a href="/contact/" aria-current={current === "contact" ? "page" : undefined}>Contact</a></li>
           </ul>
         </nav>
       </div>
@@ -82,7 +83,7 @@ const fullTitle = title === "Fly LRE" ? title : `${title} · Fly LRE`;
     link.addEventListener("click", () => setNavOpen(false));
   });
 
-  window.matchMedia("(min-width: 768px)").addEventListener("change", (event) => {
+  window.matchMedia("(min-width: 1024px)").addEventListener("change", (event) => {
     if (event.matches) setNavOpen(false);
   });
 </script>

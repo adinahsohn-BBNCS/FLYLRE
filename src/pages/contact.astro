@@ -1,0 +1,74 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { CONTACT_TOPICS } from "../lib/contact";
+---
+
+<BaseLayout
+  title="Contact"
+  description="Contact Fly LRE — questions about Lake Riverside Estates Airport (54CL), visiting, events, or this website."
+  current="contact"
+>
+  <div class="page">
+    <header class="hero hero-compact">
+      <p class="hero-eyebrow">Fly LRE · 54CL</p>
+      <h1>Contact</h1>
+      <p class="hero-tagline">Adventure Begins at the End of the Runway.</p>
+    </header>
+
+    <section class="pilot-form-section">
+      <div id="contact-form-success" class="form-success" role="status" hidden>
+        <p><strong>Thank you — your message was sent.</strong></p>
+        <p>We'll reply to the email address you provided.</p>
+      </div>
+
+      <div id="contact-form-wrap">
+        <p>
+          Questions about Lake Riverside Estates Airport, visiting, events, or this website? Send us
+          a note below.
+        </p>
+        <p class="form-note">
+          This form is not monitored around the clock. In an emergency, call 911. Flying in still
+          requires prior permission from a resident.
+        </p>
+
+        <p id="contact-form-error" class="form-error" hidden></p>
+
+        <form id="contact-form" class="pilot-form">
+          <div class="form-honey" aria-hidden="true">
+            <label for="contact-website">Website</label>
+            <input id="contact-website" type="text" name="_honey" tabindex="-1" autocomplete="off" />
+          </div>
+
+          <div class="form-field">
+            <label for="contact-name">Name</label>
+            <input id="contact-name" name="name" type="text" required autocomplete="name" />
+          </div>
+
+          <div class="form-field">
+            <label for="contact-email">Email</label>
+            <input id="contact-email" name="email" type="email" required autocomplete="email" />
+            <p class="form-hint">Used only to reply to you — never shown on the site.</p>
+          </div>
+
+          <div class="form-field">
+            <label for="contact-topic">Topic</label>
+            <select id="contact-topic" name="topic" required>
+              {CONTACT_TOPICS.map((topic) => <option value={topic}>{topic}</option>)}
+            </select>
+          </div>
+
+          <div class="form-field">
+            <label for="contact-message">Message</label>
+            <textarea id="contact-message" name="message" rows="6" required></textarea>
+          </div>
+
+          <button id="contact-form-submit" type="submit" class="form-submit">Send message</button>
+        </form>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  import "../scripts/contact-form.ts";
+</script>
