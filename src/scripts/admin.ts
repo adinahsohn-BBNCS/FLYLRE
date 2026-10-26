@@ -1,6 +1,7 @@
 import { canAccessAdminTab, resolveAdminRole, type AdminRole } from "../lib/admin-role";
 import { fromDatetimeLocalValue, formatNotamDateTime, toDatetimeLocalValue } from "../lib/datetime-local";
 import { autoReopenAt, isAirportNotamExpired, isAirportNotamLive, isAirportNotamScheduled } from "../lib/airport-notam";
+import { webmailReplyUrl } from "../lib/contact";
 import { currentCameraMonth, nextCameraResetLabel, normalizeRtspMeEmbed } from "../lib/runway-camera";
 import { getSupabase, type AirportNotam, type ContactMessage, type EventPhoto, type EventRsvp, type EventSubmission, type FlyoutSubmission, type PilotSubmission, type RunwayCamera } from "../lib/supabase";
 import { formatEventTime, parseEventTimeForInput } from "../lib/event-time";
@@ -798,7 +799,13 @@ async function saveRunwayCamera() {
 }
 
 function renderContactMessage(msg: ContactMessage) {
-  const replyHref = `mailto:${encodeURIComponent(msg.email)}?subject=${encodeURIComponent(`Re: ${msg.topic}`)}`;
+  const replyHref = webmailReplyUrl({
+    email: msg.email,
+    name: msg.name,
+    topic: msg.topic,
+    message: msg.message,
+    sentAt: msg.created_at,
+  });
   const action =
     msg.status === "new"
       ? `<button type="button" class="form-submit" data-message-action="handled">Mark handled</button>`
@@ -811,10 +818,10 @@ function renderContactMessage(msg: ContactMessage) {
         <time>${formatDate(msg.created_at)}</time>
       </div>
       <p class="admin-meta"><strong>Topic:</strong> ${escapeHtml(msg.topic)}</p>
-      <p class="admin-meta"><strong>Email:</strong> <a href="${escapeHtml(replyHref)}">${escapeHtml(msg.email)}</a></p>
+      <p class="admin-meta"><strong>Email:</strong> ${escapeHtml(msg.email)}</p>
       <p class="admin-bio admin-message-body">${escapeHtml(msg.message)}</p>
       <div class="admin-actions">
-        <a class="admin-reject admin-reply" href="${escapeHtml(replyHref)}">Reply</a>
+        <a class="admin-reject admin-reply" href="${escapeHtml(replyHref)}" target="_blank" rel="noopener">Reply</a>
         ${action}
       </div>
     </article>
